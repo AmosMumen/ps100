@@ -10,7 +10,7 @@
 
        Templar Collective      -==[ Version 1.09a]==- 
            by: AmOs // MuMen // James Bowen ]-[ 20-2-2019
-           towers by: Orlet
+           orginal towers by: Orlet
            script usages from: Muon's Overmind
                                Orlet's snippets Spawn switch / Tech level switch / Body Creator function
                                Misc @Screeps Slack chat
