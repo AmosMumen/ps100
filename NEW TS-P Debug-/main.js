@@ -1039,7 +1039,7 @@ const photonCannons = function () {
         if (towers[0] === undefined) continue;
 
         // find hostiles
-        const invaderCreep = Game.rooms[name].find(FIND_HOSTILE_CREEPS, {
+         const invaderCreep = Game.rooms[name].find(FIND_HOSTILE_CREEPS, {
             filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
 
         if (invaderCreep[0]) {
@@ -1449,13 +1449,115 @@ const laboratory = function (c) {
         }
 
         r.memory.labs.boosting = true;
-        if (c === undefined) return;
+        if (c === undefined) {
+            
+            const labCheck = [
+                Game.getObjectById(r.memory.labs.type.ATTACK),
+                Game.getObjectById(r.memory.labs.type.Harvest),
+                Game.getObjectById(r.memory.labs.type.Capacity),
+                Game.getObjectById(r.memory.labs.type.Ranged),
+                Game.getObjectById(r.memory.labs.type.Build),
+                Game.getObjectById(r.memory.labs.type.Heal),
+                Game.getObjectById(r.memory.labs.type.Upgrade)
+            ];
+
+            let lc = 0;
+
+            while (lc < 7) {
+
+                switch (lc) {
+
+                    case 0:
+                        if (labCheck[0].mineralAmount > 29) {
+                            r.memory.utils.boosting['zealotfar'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['zealotfar'].boost = false;
+                        }
+
+                        break;
+
+                    case 1:
+                        if (labCheck[1].mineralAmount > 29) {
+                            r.memory.utils.boosting['probe'].boost = true;
+                            r.memory.utils.boosting['extraction'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['probe'].boost = false;
+                            r.memory.utils.boosting['extraction'].boost = false;
+                        }
+
+                        break;
+
+                    case 2:
+                        if (labCheck[2].mineralAmount > 29) {
+                            r.memory.utils.boosting['assim'].boost = true;
+                            r.memory.utils.boosting['assimfar'].boost = true;
+                            r.memory.utils.boosting['pwrassim'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['assim'].boost = false;
+                            r.memory.utils.boosting['assimfar'].boost = false;
+                            r.memory.utils.boosting['pwrassim'].boost = false;
+                        }
+                        break;
+
+                    case 3:
+                        if (labCheck[3].mineralAmount > 29) {
+                            r.memory.utils.boosting['stalker'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['stalker'].boost = false;
+                        }
+                        break;
+
+                    case 4:
+                        if (labCheck[4].mineralAmount > 29) {
+                            r.memory.utils.boosting['bldfar'].boost = true;
+                            r.memory.utils.boosting['builder'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['bldfar'].boost = false;
+                            r.memory.utils.boosting['builder'].boost = false;
+                        }
+                        break;
+
+                    case 5:
+                        if (labCheck[5].mineralAmount > 29) {
+                            r.memory.utils.boosting['templarpriest'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['templarpriest'].boost = false;
+                        }
+                        break;
+
+                    case 6:
+                        if (labCheck[6].mineralAmount > 29) {
+                            r.memory.utils.boosting['upgrader'].boost = true;
+                        }
+                        else {
+                            r.memory.utils.boosting['upgrader'].boost = false;
+                        }
+                        break;
+
+                }
+
+                lc++;
+
+            }
+
+            continue;
+        }
+
 
         if (c.pos.x > r.memory.labs.loc.x + 2 || c.pos.x < r.memory.labs.loc.x - 2 || c.pos.y > r.memory.labs.loc.y + 2 || c.pos.y < r.memory.labs.loc.y - 2) return;
 
         let i = 0;
+        let b = 0;
 
         while (i < lab.length) {
+
+            
 
             switch (c.memory.role) {
 
@@ -1469,40 +1571,92 @@ const laboratory = function (c) {
                 case 'assimfar':
                 case 'pwrassim':
                     if (lab[i].mineralType === 'XKH2O') {
-                        if (lab[i].boostCreep(c, 2) === OK) c.memory.boosted = true;
+                        if (lab[i].boostCreep(c, 2) === OK) b++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) c.memory.boosted = true;
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
                     }
+
+                    if (b > 1) c.memory.boosted = true;
                     break;
 
                 case 'zealotfar':
                     if (lab[i].mineralType === 'XUH2O') {
-                        if (lab[i].boostCreep(c, 1) === OK) c.memory.boosted = true;
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') {
-                        lab[i].boostCreep(c, 1);
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
                     }
 
                     if (lab[i].mineralType === 'XGHO2') {
-                        lab[i].boostCreep(c);
+                        if (lab[i].boostCreep(c) === OK) b++;
                     }
+
+                    if (b > 1) c.memory.boosted = true;
+                    break;
+
+                case 'bldfar':
+                case 'builder':
+                    if (lab[i].mineralType === 'XLH2O') {
+                        if (lab[i].boostCreep(c, 2) === OK) b++;
+                    }
+
+                    if (lab[i].mineralType === 'XKH2O') {
+                        if (lab[i].boostCreep(c, 2) === OK) b++;
+                    }
+
+                    if (lab[i].mineralType === 'XZHO2') {
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                    }
+
+                    if (b > 1) c.memory.boosted = true;
+                    break;
+
+                case 'templarpriest':
+                    if (lab[i].mineralType === 'XLHO2') {
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                    }
+
+                    if (lab[i].mineralType === 'XZHO2') { 
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                    }
+
+                    if (b > 1) c.memory.boosted = true;
+                    break;
+
+                case 'stalker':
+                    if (lab[i].mineralType === 'XKHO2') {
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                    }
+
+                    if (lab[i].mineralType === 'XZHO2') {
+                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                    }
+
+                    if (lab[i].mineralType === 'XGHO2') {
+                        if (lab[i].boostCreep(c) === OK) b++;
+                    }
+
+                    if (b > 1) c.memory.boosted = true;
                     break;
 
                 case 'extraction':
                     if (lab[i].mineralType === 'XUHO2') {
-                        if (lab[i].boostCreep(c) === OK) c.memory.boosted = true;
+                        if (lab[i].boostCreep(c) === OK) b++;
                     }
 
                     if (lab[i].mineralType === 'XKH2O') {
-                        lab[i].boostCreep(c);
+                        if (lab[i].boostCreep(c) === OK) b++;
                     }
+
+                    if (b > 1) c.memory.boosted = true;
                     break;
 
             }
 
+            console.log(' Lab Testing:  ' +b);
             i++;
 
         }
@@ -1571,7 +1725,7 @@ const marketSystem = function () {
 
         if (!r.terminal || r.terminal.cooldown > 0 || r.terminal.store['energy'] < 40000) continue;
 
-        if (r.memory.labs.type && Game.market.credits > 600000 && _.sum(r.terminal.store) < 300000) {   //  If Labs are Installed(Memorized) - Check for Minerals in room Terminal.
+        if (r.memory.labs.type && Game.market.credits > 100000 && _.sum(r.terminal.store) < 300000) {   //  If Labs are Installed(Memorized) - Check for Minerals in room Terminal.
 
             const minType = ['XUH2O', 'XUHO2', 'XKH2O', 'XKHO2', 'XLH2O', 'XLHO2', 'XZH2O', 'XZHO2', 'XGH2O', 'XGHO2'];
 
@@ -1986,8 +2140,14 @@ const getObjective = function () {
             
                         case COLOR_ORANGE:
                             /// Warp Dual Long Range Builders /// ****** YELLOW / ORANGE ******
+                            i = 1; // Default of 1 (any number of builders greater than 1 removes flag)
+                            if (flag.name.slice(0, 10) === 'FarBuilder-') {
+                                i = flag.name.slice(10); //  Flag name includes number to reach to remove flag and cease calling units I.E. 'FarBuilder-4' will call 4 additional builders(5 total)
+                                console.log('Far Builder Flag Numbering Test: ' + i);
+                            }
+
                             fcc = _.sum(Game.creeps, (c) => c.memory.role === 'bldfar' && c.memory.troom === flag.pos.roomName);
-                            if (fcc > 1) { flag.remove(); continue }
+                            if (fcc > i) { flag.remove(); continue }
             
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
@@ -2152,6 +2312,7 @@ const getObjective = function () {
                             }
 
                             if (flag.name.slice(0, 5) === 'Nuke-') {
+                                flag.memory.hroom = flag.pos.roomName;
                                 nukerSystem(flag);
                                 continue;
                             }
@@ -2596,7 +2757,7 @@ const roles = function () {
                         }
                     }
 
-                    const notlost = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > 200 });
+                    const notlost = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > 100 });
 
                         if (notlost && creep.pickup(notlost, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                             creep.moveTo(notlost, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });                       
@@ -2961,6 +3122,18 @@ const roles = function () {
 
                 if (creep.room.name === creep.memory.troom) {
 
+                    const goFlag = Game.flags['Guard-' + creep.room.name];
+                    if (goFlag) {
+                        creep.moveTo(goFlag, { reusePath: 10 });
+
+                        const hostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                        if (hostile && hostile.owner.username != 'Deltazulu') {
+                            creep.attack(hostile);
+                        }
+                    
+                        continue;
+                    }
+
                     const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                     if (closestHostile && closestHostile.owner.username != 'Deltazulu') {
                         if (creep.attack(closestHostile) === ERR_NOT_IN_RANGE) {
@@ -2977,12 +3150,6 @@ const roles = function () {
                         }
                         continue;
                     } 
-
-                    const goFlag = Game.flags['Guard-' + creep.room.name];
-                    if (goFlag) {
-                        creep.moveTo(goFlag, { reusePath: 10 });
-                        continue;
-                    }
 
                     const strikeFlag = Game.flags['StrikeTeam'];
                     if (strikeFlag) {
@@ -3734,7 +3901,87 @@ const pwrCreeps = function () {
                 }
             }
 
-            if (pC.powers[PWR_OPERATE_TOWER] && pC.powers[PWR_OPERATE_TOWER].cooldown === 0 && pC.carry['ops'] > 698) {
+            if (pC.powers[PWR_OPERATE_EXTENSION] && pC.powers[PWR_OPERATE_EXTENSION].cooldown === 0) {             
+                
+                if(pC.room.storage && pC.room.storage.store[RESOURCE_ENERGY] > 2000 && pC.room.energyAvailable < 11800) {
+                    
+                    if (pC.usePower(PWR_OPERATE_EXTENSION, pC.room.storage) === ERR_NOT_IN_RANGE) {
+                        pC.moveTo(pC.room.storage, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                        continue;
+                    }
+                }
+            }
+
+            if (pC.powers[PWR_REGEN_SOURCE] && pC.powers[PWR_REGEN_SOURCE].cooldown === 0) {
+
+                if (pC.room.memory.src1Id) {
+
+                    const source0 = Game.getObjectById(pC.room.memory.src1Id);
+
+                    if (!source0.effects || !source0.effects[0]) {
+
+                        if (pC.usePower(PWR_REGEN_SOURCE, source0) === ERR_NOT_IN_RANGE) {
+                            pC.moveTo(source0, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                            continue;
+                        }
+
+                    }
+
+                    if (pC.room.memory.src2Id) {
+
+                        const source1 = Game.getObjectById(pC.room.memory.src2Id);
+
+                        if (!source1.effects || !source1.effects[0]) {
+
+                            if (pC.usePower(PWR_REGEN_SOURCE, source1) === ERR_NOT_IN_RANGE) {
+                                pC.moveTo(source1, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                                continue;
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+
+            if (pC.memory.generate === true) {
+
+                if (pC.room.storage && pC.carry['ops'] === pC.carryCapacity) {
+
+                    if (pC.transfer(pC.room.storage, 'ops') === ERR_NOT_IN_RANGE) {
+                        pC.moveTo(pC.room.storage, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                        continue;
+                    }
+                }
+
+                if (pC.room.storage.store['ops'] > pC.carryCapacity * 2) pC.memory.generate = false;
+
+                if (pC.room.memory.lockSpots && pC.room.memory.lockSpots.pwrCreep && pC.room.memory.lockSpots.pwrCreep[pC.name]) {
+                    if (pC.pos.x !== pC.room.memory.lockSpots.pwrCreep[pC.name].x || pC.pos.y !== pC.room.memory.lockSpots.pwrCreep[pC.name].y)
+                    pC.moveTo(pC.room.memory.lockSpots.pwrCreep[pC.name].x, pC.room.memory.lockSpots.pwrCreep[pC.name].y, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                }
+
+                continue;
+
+            }
+
+            if (!pC.memory.generate || pC.memory.generate === false) {
+
+                if (!pC.room.storage.store['ops'] || pC.room.storage.store['ops'] < 1000) pC.memory.generate = true;
+
+                if (pC.room.storage.store['ops'] > 200 && _.sum(pC.carry) < 250) {
+
+                    if (pC.withdraw(pC.room.storage, 'ops') === ERR_NOT_IN_RANGE) {
+                        pC.moveTo(pC.room.storage, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                        continue;
+                    }
+                }
+
+            }
+
+            if (pC.powers[PWR_OPERATE_TOWER] && pC.powers[PWR_OPERATE_TOWER].cooldown === 0 && pC.carry['ops'] > 10) {
                 const tower = _.filter(Game.structures, t => t.room.name === pC.room.name && t.structureType === 'tower' && t.energy > 9);
                 let maxKey = _.max(Object.keys(tower), o => tower[o].energy); 
                 
@@ -3754,43 +4001,45 @@ const pwrCreeps = function () {
                 }
                 
                 if (pC.usePower(PWR_OPERATE_TOWER, tower[maxKey]) === ERR_NOT_IN_RANGE) {
-                    pC.moveTo(tower[maxKey], { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                    pC.moveTo(tower[maxKey], { reusePath: 10, ignoreRoads: true, swampCost: 1, range: 3 });
                     continue;
                 }
             }
             
-            if (pC.powers[PWR_OPERATE_EXTENSION] && pC.powers[PWR_OPERATE_EXTENSION].cooldown === 0) {
-               
-                
-                if(pC.room.storage && pC.room.storage.store[RESOURCE_ENERGY] > 2000 && pC.room.energyAvailable < 11800) {
-                    
-                    if (pC.usePower(PWR_OPERATE_EXTENSION, pC.room.storage) === ERR_NOT_IN_RANGE) {
-                        pC.moveTo(pC.room.storage, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
-                        continue;
-                    }
-                }
-            }
-            
-            if(pC.powers[PWR_OPERATE_SPAWN] && pC.powers[PWR_OPERATE_SPAWN].cooldown === 0 && pC.carry['ops'] > 698) {
+            if(pC.powers[PWR_OPERATE_SPAWN] && pC.powers[PWR_OPERATE_SPAWN].cooldown === 0 && pC.carry['ops'] > 100) {
                 const spawn = _.filter(Game.structures, s => s.room.name === pC.room.name && s.structureType === 'spawn');
                 let x = 0;
+                let s = 0;
 
                 if (spawn[x]) {
 
                     if (spawn[x].effects && spawn[x].effects[x]) {
     
-                        while (x < spawn.length) {
-    
-                            x++;                           
-                            if (!spawn[x].effects) x = 5;
-                            if (spawn[x].effects && !spawn[x].effects[0]) x = 5;
+                        while (s < spawn.length) {
+                               
+                            if (!spawn[x].effects) s = 5;
+                            if (spawn[x] && spawn[x].effects && !spawn[x].effects[0]) s = 5;
+                            x++;
+                            s++;
     
                         }
     
                     }
     
-                    pC.usePower(PWR_OPERATE_SPAWN, spawn[x]);
+                    if (spawn[x] && pC.usePower(PWR_OPERATE_SPAWN, spawn[x]) === ERR_NOT_IN_RANGE) {
+                        pC.moveTo(spawn[x], { reusePath: 10, ignoreRoads: true, swampCost: 1, range: 3 });
+                        continue;
+                    }
 
+                }
+
+            }
+
+            if(pC.powers[PWR_OPERATE_POWER] && pC.powers[PWR_OPERATE_POWER].cooldown === 0 && pC.carry['ops'] > 200 && pC.room.terminal.store['energy'] > 55000 && pC.room.terminal.store['power'] > 6000) {
+                
+                if (pC.usePower(PWR_OPERATE_POWER, pS) === ERR_NOT_IN_RANGE) {
+                    pC.moveTo(pS, { reusePath: 10, ignoreRoads: true, swampCost: 1, range: 3 });
+                    continue;
                 }
 
             }
@@ -3875,9 +4124,9 @@ const getEnergyStatus = function (spawn) {
 // warp in Worker (Stage 1 Miner / Builder / Repairs)
 const warpWorker = function (spawn, tier, name, memory) {
 
-    const bpc = ["w2c2m","w2c2m","2w2c2m","3w3c3m","4w4c4m","5w5c5m","9w9c9m","12w12c12m","16w17c17m"];
+   /*  const bpc = ["w2c2m","w2c2m","2w2c2m","3w3c3m","4w4c4m","5w5c5m","9w9c9m","12w12c12m","16w17c17m"];
 
-    spawn.spawnCreep(createBody(bpc[tier]), name, memory);
+    spawn.spawnCreep(createBody(bpc[tier]), name, memory); */
 
     switch (tier) {
         case 8: // 3300e -- the ultimate worker
