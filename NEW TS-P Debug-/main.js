@@ -76,7 +76,7 @@
 *                                                                                                pos x: 10, y: 10  -  send Power
 *                                                                                                    x: 20, y: 20  -  send Hydrogen  (More to come)
 *
-*                                        ('Build-')  --  Place on the first spawn of the room.  Builds 10x10 base, requires 10x10 available squares (First spawn on bottom left of 10x10)
+*                                        ('Build-')  --  Place on the first spawn of the room.  Builds 10x10 base, requires 10x10 available squares (First spawn on bottom left of 10x10) xx[Removed for Improvement]xx
 *                                        ('Nuke-' + room.name)  --  Launch Nuke to Destination room - performs exactly as Trade-  flag does.  Name with Destination,  place in room of origin. 
 *                                        ('Idle-' + powerCreep.name) -- Lock in Idle position for Power Creep.  Generally a strategic position adjcent to Storage Structure.
 *                                        ('Power-Assim')  -- Lock into room memory the location for Power Assimilator post. Generally off the roads - adjcent to Terminal or Power Spawn(or between them both)
@@ -101,10 +101,113 @@
 
 
 
+/* 
+
+
+////////////////////////////////////////   File Header Zone - Instilling Permanent Constants For Long Term Usage   \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+ 
+*/
+
+console.log(' File Loaded: ' + Game.time + '  CPU: ' + Game.cpu.getUsed() + '  Bucket: ' + Game.cpu.bucket + '       Test.');
 
 
 
 
+
+//////////   NAME SELECT Function Constants  (Name Arrays)   \\\\\\\\\\\\\
+const names1 = ["Caycer", "Charmoo", "Dooglass", "Bowgen", "Orlet", "Tassadar", "Aiden", "Liam", "Fenix", "Aldaris", "Taldarin", "Jayden", "Karax", "Urun", "Adun", "Caden", "Kaldalis", "Karass", "Zeratul", "Caleb", "Mohandar", "Mojo", "Elijah", "Ulrezaj", "Alarak", "Ma Lash", "Nyon", "Felanis", "Talandar", "Clolarion", "Kizrath", "Aedus", "Heiberg", "Mertick", "Minos", "Dabiri", "Danimoth", "Demioch", "Pagan", "Edullon", "Eredas", "Gantrithor", "Eli", "Zyrkhan", "Animeth", "Hych", "Kan", "Axxath", "Tutus", "Ertyr", "Xioldol", "Dhamas", "Ful", "Aldinyn", "Gor", "Zith", "Xox", "Igith", "Aldazres", "Kyr", "Khurkus", "Ghitath", "Khar", "Ghel", "Ogren", "Kixxath", "Xiodeth", "Erazrech", "Onugrus", "Diath", "Zyth", "Diadal", "Tigin", "Dildrath", "Agdanath", "Indiotuch", "Dhox", "Khech", "Ganos", "Zaldel", "Ildros", "Xal Dan", "Zemos", "Kydos", "Oger", "Xavier", "Umymul", "Khyl", "Gyrkas", "Kumor", "Xeroch", "Aminoth", "Amedryx", "Irotoch", "Denor", "Dhiamys", "Edech", "Declan", "Kedoxus", "Anydalis", "Endazris", "Collues", "Mateo", "Micah", "Ellios", "Char Les", "Cay Ce", "Lex Ri", "Var Oli"];
+const names2 = ["Lyssrar", "Stefay", "Em", "Paulae", "Inga", "Erika", "Rohana", "Selendis", "Raszagal", "Talis", "Vorazun", "Ava", "Ji nara", "Eri", "Meri", "Kyrea", "Lasarra", "Hyreh", "Adonzi", "Ghyzsa", "Ziaryth", "Tiria", "Golla", "Ella", "Teszu", "Syno", "Aaliyah", "Fulno", "Hetun", "Zilgo", "Yrsygy", "Anea", "Aria", "Sasrin", "Kydus", "Lila", "Erede", "Adalyn", "Azroszu", "Erura", "Eta", "Tyte", "Gosryn", "Indaras", "Arindrel", "Ellygi", "Erille", "Nilzi", "Ealgoth", "Norae", "Mila", "Ryllial", "Healdath", "Ianygu", "Idada", "Idunzu", "Maya", "Mygi", "Yndy", "Zynol", "Elena", "Ruto", "Aru", "Hedy", "Itigath", "Ynzoty", "Alaina", "Otenzu", "Yzsello", "Oldryh", "Urza", "Geru", "Keirae", "Erundu", "Re Gan", "Mollae", "Nindrah", "Azso", "Nyguh", "Enzosrean", "Odidyh", "Arsyte", "Evae", "Akice", "Elianae", "Fadyl", "Dhuni", "Ghoxi", "Gondyn", "Tille", "Kaelyn", "Zeszyl", "Yta", "Fiatia", "Aldelzae", "Tyda", "Tozsa", "Adialli", "Sodae", "Kigu", "Kygo", "Viviae", "Jul Ana", "Gianna", "Sky Ter", "Jor Dyn", "Bezeal", "Rae Gin", "Searithe", "Leyora"];
+//-------------------------------=====================================================================----------------------------------\\
+
+
+
+
+        /*                  New Usage Version of Orlet's createBodyArry using object arrays vs. switches
+        *  MOVE - "M"
+        *  WORK - "W"
+        *  CARRY - "C"
+        *  ATTACK - "A"
+        *  RANGED_ATTACK - "R"
+        *  HEAL - "H"
+        *  CLAIM - "X" or "K" --- note the special character
+        *  TOUGH - "T"
+        *
+        *  Lower Case Expected
+        * 
+        * Example - 6 WORK 1 CARRY 1 MOVE:
+        * 
+        * Example 1:    "6w1c1m"
+        * Example 2:    "wwwwwwcm"
+        * Example 3:    "6wcm"
+        */
+
+
+const unitBuilds = {  // role: bodyPartsArry[0-8] called in Function as Teir \\
+
+//------------ // 650e  // 300e // 400e // 600e // 650e ------------------------------- Base Probes
+    'probe' : [ "5w3m", "2w2m", "3w2m", "5w2m", "5w3m",  "5w3m", "5w3m", "5w3m", "5w3m"],
+
+//------------ // 650e  // 300e // 400e // 600e // 650e ------------------------------- Remote Probes
+    'probefar' : [ "5w3m", "2w2m", "3w2m", "5w2m", "5w3m",  "5w3m", "5w3m", "5w3m", "5w3m"],
+
+//--------------------------- // 300e // 450e // 600e // 750e // 1800e // 1800e // 2500e -- Base Assimilators
+    'assim' : ["4c2m","4c2m","4c2m", "6c3m", "8c4m", "10c5m", "18c9m", "24c12m", "33c17m"],
+
+//--------------------------- // 300e // 450e // 600e // 750e // 1800e // 1800e // 2500e -- Remote Assimilators
+    'assimfar' : ["4c2m","4c2m","4c2m", "6c3m", "8c4m", "10c5m", "18c9m", "24c12m", "33c17m"],
+
+// -------------------- // 300e  // 400e // 600e  // 800e   // 1000e // 1800e // 2400e   // 3300e -- Base Builders
+    'builder' : ["w2c2m","w2c2m","2w2c2m","3w3c3m","4w4c4m","5w5c5m","9w9c9m","12w12c12m","16w17c17m"],
+
+// -------------------- // 300e  // 400e // 600e  // 800e   // 1000e // 1800e // 2400e   // 3300e -- Remote Builders
+    'bldfar' : ["w2c2m","w2c2m","2w2c2m","3w3c3m","4w4c4m","5w5c5m","9w9c9m","12w12c12m","16w17c17m"],
+
+// -------------------- // 300e  // 400e // 600e  // 800e   // 1000e // 1800e // 2400e   // 3300e -- Room Level 1 and 2 Worker / Builder / Upgrader
+    'unique' : ["w2c2m","w2c2m","2w2c2m","3w3c3m","4w4c4m","5w5c5m","9w9c9m","12w12c12m","16w17c17m"],
+
+//------------------    // 300e  // 400e   // 600e   // 800e   // 1200e   // 1900e  // 2400e    // 4100e -- Base Upgrader
+    'upgrader' : ["w2c2m","w2c2m", "2w2c2m", "3w3c3m", "4w4c4m", "8w4c4m", "12w8c6m", "16w12c4m", "15w10c8m"],
+
+//---------------------------------------------------------------// 1200e  // 1900e   // 2400e    // 4100e -- Mineral Extractor
+    'extraction' : ["8w4c4m","8w4c4m","8w4c4m","8w4c4m","8w4c4m","8w4c4m", "12w8c6m", "16w12c4m", "32w10c8m"],
+
+//------------------------------------------------------ // 1300e  // 1950e // 2600e // 3250e -- Claimer
+    'claimer' : ["2x2m", "2x2m", "2x2m", "2x2m", "2x2m", "2x2m",  "3x3m",   "4x4m",  "5x5m"],
+
+//------------------------------ // 410e // 520e // 780e // 950e    // 2040e    // 2890e       // 3760e -- Zealot (Melee Class)
+    'zealot' : ["4m3a","4m3a","4m3a", "4m4a", "6m6a", "5t10m5a", "8t20m12a", "10t25m13a2h", "1t17m30a2h"],
+
+//--------------------------------------------- // 600e   // 780e   // 1020e    // 2020e    // 2890e       // 3760e -- Alt Zealot (Melee Fodder in most cases)
+    'altzealot' : ["10t10m","10t10m","10t10m","10t10m", "13t13m", "12t14m2w", "12t22m8w", "10t13a25m2h", "1t2h30a17m"],
+
+//------------------------------------------------- // 800e // 2400e  // 4000e  // 5000e -- Stalker (Ranged Class)
+    'stalker' : ["4m4r","4m4r","4m4r","4m4r","4m4r","4m4r", "12m12r", "20m20r", "25m25r"],
+
+//---------------------------------------------------- // 600e // 650e // 1800e // 2400e  // 7500e -- Templar (Healer Class)
+    'templarpriest' : ["2m2h", "2m2h", "2m2h", "2m2h", "2m2h", "3m2h", "6m6h",  "8m8h",   "25m25h"]
+
+};
+
+
+///// ---------   Warp Visuals Icons for role spawning --------- \\\\\\
+const visualsIcons = {
+
+    'probe': { icon: '☀️  ', x: 0.86, y: 0.25 },
+    'probefar': { icon: '🔀☀️ ', x: 0.86, y: 0.25 },
+    'assimfar': { icon: '🔀📦 ', x: 0.86, y: 0.25 },
+    'bldfar': { icon: '🔀🔨 ', x: 0.86, y: 0.25 },
+    'assim': { icon: '📦  ', x: 0.86, y: 0.25 },
+    'upgrader': { icon: '🔮  ', x: 0.86, y: 0.25 },
+    'builder': { icon: '🔨  ', x: 0.84, y: 0.25 },
+    'unique': { icon: '🛠️ ', x: 0.86, y: 0.25 },
+    'extraction': { icon: '🔩 ', x: 0.86, y: 0.25 },
+    'pwrassim': { icon: '⭕ ', x: 0.86, y: 0.25 },
+    'zealot': { icon: '🔱  ', x: 0.88, y: 0.25 },
+    'altzealot': { icon: '🔱  ', x: 0.88, y: 0.25 },
+    'templarpriest': { icon: '🔱  ', x: 0.88, y: 0.25 }
+
+};
 
 
 
@@ -119,27 +222,6 @@
 *//// Warp(Spawn) Manager \\\\ -=============================================-  
 const warpVisuals = function () {
 
-    if (!Memory.utils || !Memory.utils.warpVisuals) {
-
-        if (!Memory.utils) Memory.utils = {};
-        Memory.utils.warpVisuals = {};
-
-        Memory.utils.warpVisuals['probe'] = { icon: '☀️  ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['probefar'] = { icon: '🔀☀️ ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['assimfar'] = { icon: '🔀📦 ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['bldfar'] = { icon: '🔀🔨 ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['assim'] = { icon: '📦  ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['upgrader'] = { icon: '🔮  ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['builder'] = { icon: '🔨  ', x: 0.84, y: 0.25 };
-        Memory.utils.warpVisuals['unique'] = { icon: '🛠️ ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['extraction'] = { icon: '🔩 ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['pwrassim'] = { icon: '⭕ ', x: 0.86, y: 0.25 };
-        Memory.utils.warpVisuals['zealotfar'] = { icon: '🔱  ', x: 0.88, y: 0.25 };
-        Memory.utils.warpVisuals['smallzealot'] = { icon: '🔱  ', x: 0.88, y: 0.25 };
-        Memory.utils.warpVisuals['templarpriest'] = { icon: '🔱  ', x: 0.88, y: 0.25 };
-
-    }
-
     for (const name in Game.spawns) {
         const spawn = Game.spawns[name];
 
@@ -148,9 +230,9 @@ const warpVisuals = function () {
             const spawningCreep = Game.creeps[spawn.spawning.name];
             const final = Math.floor(spawn.spawning.remainingTime * 100 / spawn.spawning.needTime + (-100)) * -1;
 
-            let roles = Memory.utils.warpVisuals[spawningCreep.memory.role];
+            let roles = visualsIcons[spawningCreep.memory.role];
 
-            if (!Memory.utils.warpVisuals[spawningCreep.memory.role]) roles = Memory.utils.warpVisuals['unique'];
+            if (!visualsIcons[spawningCreep.memory.role]) roles = visualsIcons['unique'];
 
             spawn.room.visual.text(roles.icon + final + '%', spawn.pos.x + roles.x, spawn.pos.y + 0.25,
                         { align: 'center', opacity: 0.9 });
@@ -222,10 +304,14 @@ const warpUnitsV2 = function (pW) {
         pW.memory.utils.boosting['unique'] = { boost: false };
         pW.memory.utils.boosting['pwrassim'] = { boost: false };
         pW.memory.utils.boosting['extraction'] = { boost: false };
-        pW.memory.utils.boosting['zealotfar'] = { boost: false };
-        pW.memory.utils.boosting['smallzealot'] = { boost: false };
+        pW.memory.utils.boosting['zealot'] = { boost: false };
+        pW.memory.utils.boosting['altzealot'] = { boost: false };
         pW.memory.utils.boosting['templarpriest'] = { boost: false };
         pW.memory.utils.boosting['stalker'] = { boost:false };
+        pW.memory.utils.upgrade = true;
+        pW.memory.utils.towersFiring = true;
+        pW.memory.utils.incomingNuke = {};
+        pW.memory.utils.safeEscape = {};
 
     }
 
@@ -233,120 +319,57 @@ const warpUnitsV2 = function (pW) {
     if (pW.storage && !pW.memory.utils['storing'].storageFill && pW.storage.store['energy'] < 10000) pW.memory.utils['storing'].storageFill = true;
     if (pW.storage && pW.memory.utils['storing'].storageFill && pW.storage.store['energy'] > 950000) pW.memory.utils['storing'].storageFill = false;
 
-    if (pW.terminal && !pW.memory.utils['storing'].terminalFill && pW.terminal.store['energy'] < 50000) pW.memory.utils['storing'].terminalFill = true;
-    if (pW.terminal && pW.memory.utils['storing'].terminalFill && pW.terminal.store['energy'] > 100000) pW.memory.utils['storing'].terminalFill = false;
+    if (pW.terminal && !pW.memory.utils['storing'].terminalFill && (pW.terminal.store['energy'] < 52000 || !pW.terminal.store['energy'])) {
+        pW.memory.utils['storing'].terminalFill = true;
+        Memory.utils.terminals.roomLowEnergy.energy = pW.terminal.store['energy'];
+        Memory.utils.terminals.roomLowEnergy.roomName = pW.name;
+    }
 
-
-    if (pW.memory.labs.type && Game.time % 5 === 0) {
-
-        let i = 0;
-        /* pW.memory.labs.type.Dismantel,
-        pW.memory.labs.type.MOVE,
-        pW.memory.labs.type.TOUGH; */
-
-        const labs = [pW.memory.labs.type.ATTACK,
-        pW.memory.labs.type.Harvest,
-        pW.memory.labs.type.Capacity,
-        pW.memory.labs.type.Ranged,
-        pW.memory.labs.type.Build,
-        pW.memory.labs.type.Heal,
-        pW.memory.labs.type.Upgrade];
-
-        while (i < labs.length) {
-
-            if (Game.getObjectById(labs[i]).mineralAmount === 3000) {
-
-                switch (i) {
-
-                    case 0:
-                        pW.memory.utils.boosting['zealotfar'].boost = true;
-                        pW.memory.utils.boosting['smallzealot'].boost = true;
-                        break;
-
-                    case 1:
-                        pW.memory.utils.boosting['probe'].boost = true;
-                        pW.memory.utils.boosting['extraction'].boost = true;
-                        break;
-
-                    case 2:
-                        pW.memory.utils.boosting['assimfar'].boost = true;
-                        pW.memory.utils.boosting['assim'].boost = true;
-                        break;
-
-                    case 3:
-                        pW.memory.utils.boosting['stalker'].boost = true;
-                        break;
-
-                    case 4:
-                        pW.memory.utils.boosting['builder'].boost = true;
-                        pW.memory.utils.boosting['bldfar'].boost = true;
-                        break;
-
-                    case 5:
-                        pW.memory.utils.boosting['templarpriest'].boost = true;
-                        break;
-
-                    case 6:
-                        pW.memory.utils.boosting['upgrader'].boost = true;
-
-                }
-
-            }
-
-            if (Game.getObjectById(labs[i]).mineralAmount < 60) {
-
-                switch (i) {
-
-                    case 0:
-                        pW.memory.utils.boosting['zealotfar'].boost = false;
-                        pW.memory.utils.boosting['smallzealot'].boost = false;
-                        break;
-
-                    case 1:
-                        pW.memory.utils.boosting['probe'].boost = false;
-                        pW.memory.utils.boosting['extraction'].boost = false;
-                        break;
-
-                    case 2:
-                        pW.memory.utils.boosting['assimfar'].boost = false;
-                        pW.memory.utils.boosting['assim'].boost = false;
-                        break;
-
-                    case 3:
-                        pW.memory.utils.boosting['stalker'].boost = false;
-                        break;
-
-                    case 4:
-                        pW.memory.utils.boosting['builder'].boost = false;
-                        pW.memory.utils.boosting['bldfar'].boost = false;
-                        break;
-
-                    case 5:
-                        pW.memory.utils.boosting['templarpriest'].boost = false;
-                        break;
-
-                    case 6:
-                        pW.memory.utils.boosting['upgrader'].boost = false;
-
-                }
-
-            }
-
-            i++;
-        }
+    if (pW.terminal && pW.memory.utils['storing'].terminalFill && pW.terminal.store['energy'] > 105000) {
+        pW.memory.utils['storing'].terminalFill = false;
+        Memory.utils.terminals.roomHighEnergy.energy = pW.terminal.store['energy'];
+        Memory.utils.terminals.roomHighEnergy.roomName = pW.name;
 
     }
 
-            
 
+    if (Memory.utils.terminals && Memory.utils.terminals.roomLowEnergy.roomName && Memory.utils.terminals.roomHighEnergy.roomName) {
 
+        let te = 0;
+        const rm = Game.rooms[Memory.utils.terminals.roomHighEnergy.roomName];
+        const t = Game.rooms[Memory.utils.terminals.roomLowEnergy.roomName];
 
+        if (rm.terminal.store['energy'] < 105000) Memory.utils.terminals.roomHighEnergy.roomName = undefined;
+        if (t.terminal.store['energy'] > 52000) Memory.utils.terminals.roomLowEnergy.roomName = undefined;
 
+        if (t.terminal.store['energy'] > 0) te = t.terminal.store['energy'];
+
+        console.log(t.terminal.store['energy']);
+        
+        rm.terminal.send('energy', 52000 - te, t.name, 'Energy Sent');
+
+    }
 
 
 
 
     // Hostile Creeps   ------   War zone   -------   Safe Mode Setup \\
+
+    if (Game.time % 1200 === 0) {
+        const incomingNuke = pW.find(FIND_NUKES, { filter: s => s.timeToLand > 45000 });
+        if (incomingNuke[0]) {
+            console.log ( '  WARNING! ------- WARNING! ----------- WARNING!  --===   NUKE INCOMING ===--         ' + incomingNuke.timeToLand + '     ' + incomingNuke.room + '      ' + incomingNuke.launchRoomName);
+    
+            pW.memory.timers.nukeTimer = Game.time + incomingNuke.timeToLand - 3;
+            pW.memory.utils.incomingNuke = {};
+            pW.memory.utils.incomingNuke.roomName = incomingNuke.launchRoomName;
+        } 
+    }
+
+    if (pW.memory.timers.nukeTimer !== null && pW.memory.timers.nukeTimer < Game.time) {
+        pW.controller.activateSafeMode();
+        pW.memory.timers.nukeTimer === undefined;
+    }
 
     if (Game.flags.EnergyAttackOn && Game.flags.EnergyAttackOn.pos.roomName === name) {
         if (Game.time > pW.memory.timers.energyAttackTimer) {
@@ -626,7 +649,7 @@ const warpUnitsV2 = function (pW) {
             if (dSource === pW.memory.src1Id) { dContX = pW.memory.containers.s1ContA.goX; dContY = pW.memory.containers.s1ContA.goY }
             if (dSource === pW.memory.src2Id) { dContX = pW.memory.containers.s2ContB.goX; dContY = pW.memory.containers.s2ContB.goY }
             if (dContX === undefined) return;
-            warpProbe(spawn, 1, 'Probe-' + Game.time.toString(36), { memory: { role: 'probe', wSource: dSource, x: dContX, y: dContY } });
+            warpingUnits(spawn, 1, 'Probe-' + Game.time.toString(36), { memory: { role: 'probe', wSource: dSource, x: dContX, y: dContY } });
             return;
         }
     }
@@ -634,7 +657,7 @@ const warpUnitsV2 = function (pW) {
     /// Emergency Warp in Assimilator 📦📦 --- contingency plan to restore base functions ///
     if (assim < 1 && Game.time % 20 === 0) {
         if (pW.energyAvailable < getEnergyStatus(spawn) * 200) {
-            warpAssim(spawn, 1, getName(), { memory: { role: 'assim' } });
+            warpingUnits(spawn, 1, getName(), { memory: { role: 'assim' } });
             return;
         }
     }
@@ -659,7 +682,7 @@ const warpUnitsV2 = function (pW) {
         if (dSource === pW.memory.src1Id) { dContX = pW.memory.containers.s1ContA.goX; dContY = pW.memory.containers.s1ContA.goY }
         if (dSource === pW.memory.src2Id) { dContX = pW.memory.containers.s2ContB.goX; dContY = pW.memory.containers.s2ContB.goY }
         if (dContX === undefined) { return }
-        warpProbe(spawn, getEnergyStatus(spawn), 'Probe-' + Game.time.toString(36), { memory: { role: 'probe', wSource: dSource, x: dContX, y: dContY } });
+        warpingUnits(spawn, getEnergyStatus(spawn), 'Probe-' + Game.time.toString(36), { memory: { role: 'probe', wSource: dSource, x: dContX, y: dContY } });
         return;
     }
 
@@ -671,7 +694,7 @@ const warpUnitsV2 = function (pW) {
         if (fdr[0]) ii = 2;
         if (fdr[0] && fdr[0].energy > 2900) ii = 3;
         if (assim < ii){ 
-            warpAssim(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'assim', fillStorage: true } });
+            warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'assim', fillStorage: true } });
             return;
         }
     }
@@ -679,27 +702,27 @@ const warpUnitsV2 = function (pW) {
     /// Warp Archons ///  🔮🔮🔮🔮🔮🔮 ---- Dedicated Controller Upgrader (Uses Link / Storage primary)
     if (upgraders < 1 && assim > 0 && pW.energyAvailable === pW.energyCapacityAvailable) {   
         if (pW.controller.level === 8 && pW.controller.ticksToDowngrade < 60000 || pW.controller.level <= 7) {
-            pW.memory.timers.upgrade = true;
+            pW.memory.utils.upgrade = true;
         }
 
         else if (pW.controller.level === 8 && pW.controller.ticksToDowngrade > 195000 ) {
-            pW.memory.timers.upgrade = false;
+            pW.memory.utils.upgrade = false;
         }
 
-        if (pW.memory.timers.upgrade) {
-            warpArchon(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'upgrader' } });
+        if (pW.memory.utils.upgrade) {
+            warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'upgrader' } });
             return;
         }
     }
 
     /// Warp Builders ///  🔨🔨🔨🔨🔨🔨 ----  Performs Building Fuction until 0 sites remain - Switches to Repairs Function
     if (builders < 1 && construct.length > 0 || builders < 2 && construct.length > 24) {
-        warpWorker(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'builder' } });
+        warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'builder' } });
         return;
     }
 
     /// Warp Power Assimilators ///  ⭕⭕⭕    ---- Dedicated Power Transporter.  Assimilates collected power into Power Spawn Processing ----
-    if (pW.memory.powerSpawn && pW.energyAvailable === pW.energyCapacityAvailable && pW.terminal.store['power'] > 1300 && pW.terminal.store['energy'] > 50000 && pwrassim < 1) {         
+    if (pW.memory.powerSpawn && pW.energyAvailable === pW.energyCapacityAvailable && pW.terminal.store['power'] > 1300 && pW.terminal.store['energy'] > 8000 && pwrassim < 1) {         
         spawn.spawnCreep(createBody("2c2m"), getName(), { memory: { role: 'pwrassim', moving: true, type: 'p' } });
             return;      
     }
@@ -707,7 +730,7 @@ const warpUnitsV2 = function (pW) {
     /// Warp Mineral Miners ///  🔩🔩🔩    ----  Works Extractor for Mineral Resources
     if (pW.memory.extractor !== undefined && pW.energyAvailable === pW.energyCapacityAvailable && extraction < 1) {
         if (Game.getObjectById(pW.memory.mineral).ticksToRegeneration > 40) return;
-        warpExtractor(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'extraction' } });
+        warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'extraction' } });
         return;
     }
     
@@ -847,7 +870,7 @@ const warpUnitsV1 = function (pW) {
         // Count of creeps at Sources
         if (srcxu < 1) { dSource = pW.memory.src1Id }
         else if (srcyu < 1) { dSource = pW.memory.src2Id }
-        warpWorker(spawnPoint, 1, 'Probe-' + Game.time.toString(36), { memory: { role: 'unique', wSource: dSource, wSpawn: spawnPoint.id } });
+        warpingUnits(spawnPoint, 1, 'Probe-' + Game.time.toString(36), { memory: { role: 'unique', wSource: dSource, wSpawn: spawnPoint.id } });
         return;
     }
 
@@ -856,7 +879,7 @@ const warpUnitsV1 = function (pW) {
         // Count of creeps at Sources
         if (srcxu < 2) { dSource = pW.memory.src1Id }
         else if (srcyu < 3) { dSource = pW.memory.src2Id }
-        warpWorker(spawnPoint, getEnergyStatus(spawnPoint), 'Probe-' + Game.time.toString(36), { memory: { role: 'unique', wSource: dSource, wSpawn: spawnPoint.id } });
+        warpingUnits(spawnPoint, getEnergyStatus(spawnPoint), 'Probe-' + Game.time.toString(36), { memory: { role: 'unique', wSource: dSource, wSpawn: spawnPoint.id } });
         return;
     }
 };
@@ -874,6 +897,26 @@ const warpUnitsV1 = function (pW) {
 
 
 const roomNotMine = function (pW) {
+
+    if (pW.memory.containers && pW.memory.containers.s1ContA) {
+
+        const rc = pW.find(FIND_STRUCTURES, { 
+            filter: (s) => ( s.structureType === 'road' || s.structureType === 'container' )  && s.hits < s.hitsMax * 0.25 });
+               
+        if (rc[0]) {
+    
+            let i = 0;
+    
+            while (i < rc.length) {
+    
+                rc[i].pos.createFlag('Restore-' + rc[i].pos.x + rc[i].pos.y, COLOR_GREY, COLOR_GREY);
+                i++;
+    
+            }
+            
+        }
+
+    }
 
     /// ---- Room Loop Cycle - Update Essential Information \\\
     if (pW.memory.timers === undefined) {
@@ -1038,6 +1081,16 @@ const photonCannons = function () {
         // no towers? move on to next room
         if (towers[0] === undefined) continue;
 
+        // Incoming Nuke Fortify
+        if (Game.rooms[name].memory.timers.nukeTimer){
+            Game.rooms[name].memory.repairs = 5000000;
+            towers.forEach((tower) => { 
+                const rams = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: s => s.structureType === 'rampart' && s.hits < Game.rooms[name].memory.repairs});
+                 tower.repair(rams) });
+                continue;
+        }
+        
         // find hostiles
          const invaderCreep = Game.rooms[name].find(FIND_HOSTILE_CREEPS, {
             filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
@@ -1050,11 +1103,11 @@ const photonCannons = function () {
                 const towersReady = _.sum(Game.structures, t => t.room.name === name && t.structureType === 'tower' && t.energy > 400);
                 const towersTotal = _.sum(Game.structures, t => t.room.name === name && t.structureType === 'tower');
 
-                if (!towers[0].room.memory.timers.towersFiring && towersReady === towersTotal) towers[0].room.memory.timers.towersFiring = true;
-                if (towers[0].room.memory.timers.towersFiring && towers.length < towersTotal) towers[0].room.memory.timers.towersFiring = false;
+                if (!towers[0].room.memory.utils.towersFiring && towersReady === towersTotal) towers[0].room.memory.utils.towersFiring = true;
+                if (towers[0].room.memory.utils.towersFiring && towers.length < towersTotal) towers[0].room.memory.utils.towersFiring = false;
 
                 // against enemy healers - allow all towers to have energy before firing
-                if (!towers[0].room.memory.timers.towersFiring) continue;
+                if (!towers[0].room.memory.utils.towersFiring) continue;
 
                 // pew and move on to next room
                 towers.forEach((tower) => { tower.attack(healers[0]) });
@@ -1070,7 +1123,6 @@ const photonCannons = function () {
             filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
 
         if (powerCreepers[0]) {
-
             // pew and move on to next room
             towers.forEach((tower) => { tower.attack(powerCreepers[0]) });
             continue;
@@ -1078,10 +1130,13 @@ const photonCannons = function () {
 
 
         // catch ramparts
-        const earlyRamparts = _.filter(Game.structures, s => s.room.name === name && s.structureType === 'rampart' && s.hits < 1500);
+        const earlyRamparts = _.filter(Game.structures, s => s.room.name === name && s.structureType === 'rampart' && s.hits < Game.rooms[name].memory.repairs);
         if (earlyRamparts[0]) {
+            // find rampart with lowest hitpoints
+            const minKey = _.min(Object.keys(earlyRamparts), o => earlyRamparts[o].hits);
+
             // pew and move on to next room
-            towers.forEach((tower) => { tower.repair(earlyRamparts[0]) });
+            towers.forEach((tower) => { tower.repair(earlyRamparts[minKey]) });
             continue;
         }
 
@@ -1422,13 +1477,6 @@ const laboratory = function (c) {
             r.memory.labs.boosting = false;
         }
 
-        const lab = _.filter(Game.structures, s => s.structureType === 'lab' && s.room.name === n && s.energy > 19 && s.mineralAmount > 29);
-
-        if (lab[0] === undefined) {
-            r.memory.labs.boosting = false;
-            continue;
-        }
-
         if (r.memory.labs.type === undefined) {
 
             const LCOUNT = _.filter(Game.structures, s => s.structureType === 'lab' && s.room.name === n);
@@ -1446,6 +1494,13 @@ const laboratory = function (c) {
                 r.memory.labs.type.TOUGH = LCOUNT[9].id;
             }
 
+        }
+
+        const lab = _.filter(Game.structures, s => s.structureType === 'lab' && s.room.name === n && s.energy > 19 && s.mineralAmount > 29);
+
+        if (lab[0] === undefined) {
+            r.memory.labs.boosting = false;
+            continue;
         }
 
         r.memory.labs.boosting = true;
@@ -1469,17 +1524,17 @@ const laboratory = function (c) {
 
                     case 0:
                         if (labCheck[0].mineralAmount > 29) {
-                            r.memory.utils.boosting['zealotfar'].boost = true;
+                            r.memory.utils.boosting['zealot'].boost = true;
                         }
                         else {
-                            r.memory.utils.boosting['zealotfar'].boost = false;
+                            r.memory.utils.boosting['zealot'].boost = false;
                         }
 
                         break;
 
                     case 1:
                         if (labCheck[1].mineralAmount > 29) {
-                            r.memory.utils.boosting['probe'].boost = true;
+                            if (r.memory.utils.regenSource) r.memory.utils.boosting['probe'].boost = true;                           
                             r.memory.utils.boosting['extraction'].boost = true;
                         }
                         else {
@@ -1553,11 +1608,9 @@ const laboratory = function (c) {
         if (c.pos.x > r.memory.labs.loc.x + 2 || c.pos.x < r.memory.labs.loc.x - 2 || c.pos.y > r.memory.labs.loc.y + 2 || c.pos.y < r.memory.labs.loc.y - 2) return;
 
         let i = 0;
-        let b = 0;
+        if (c.memory.bc === undefined) c.memory.bc = 0;
 
         while (i < lab.length) {
-
-            
 
             switch (c.memory.role) {
 
@@ -1571,92 +1624,80 @@ const laboratory = function (c) {
                 case 'assimfar':
                 case 'pwrassim':
                     if (lab[i].mineralType === 'XKH2O') {
-                        if (lab[i].boostCreep(c, 2) === OK) b++;
+                        if (lab[i].boostCreep(c, 2) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
-
-                    if (b > 1) c.memory.boosted = true;
                     break;
 
-                case 'zealotfar':
+                case 'zealot':
                     if (lab[i].mineralType === 'XUH2O') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XGHO2') {
-                        if (lab[i].boostCreep(c) === OK) b++;
+                        if (lab[i].boostCreep(c) === OK) c.memory.bc++;
                     }
-
-                    if (b > 1) c.memory.boosted = true;
                     break;
 
                 case 'bldfar':
                 case 'builder':
                     if (lab[i].mineralType === 'XLH2O') {
-                        if (lab[i].boostCreep(c, 2) === OK) b++;
+                        if (lab[i].boostCreep(c, 2) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XKH2O') {
-                        if (lab[i].boostCreep(c, 2) === OK) b++;
+                        if (lab[i].boostCreep(c, 2) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
-
-                    if (b > 1) c.memory.boosted = true;
                     break;
 
                 case 'templarpriest':
                     if (lab[i].mineralType === 'XLHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') { 
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
-
-                    if (b > 1) c.memory.boosted = true;
                     break;
 
                 case 'stalker':
                     if (lab[i].mineralType === 'XKHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XZHO2') {
-                        if (lab[i].boostCreep(c, 1) === OK) b++;
+                        if (lab[i].boostCreep(c, 1) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XGHO2') {
-                        if (lab[i].boostCreep(c) === OK) b++;
+                        if (lab[i].boostCreep(c) === OK) c.memory.bc++;
                     }
-
-                    if (b > 1) c.memory.boosted = true;
                     break;
 
                 case 'extraction':
                     if (lab[i].mineralType === 'XUHO2') {
-                        if (lab[i].boostCreep(c) === OK) b++;
+                        if (lab[i].boostCreep(c) === OK) c.memory.bc++;
                     }
 
                     if (lab[i].mineralType === 'XKH2O') {
-                        if (lab[i].boostCreep(c) === OK) b++;
+                        if (lab[i].boostCreep(c) === OK) c.memory.bc++;
                     }
-
-                    if (b > 1) c.memory.boosted = true;
                     break;
 
             }
 
-            console.log(' Lab Testing:  ' +b);
+            if (c.memory.bc > 1) c.memory.boosted = true;
             i++;
 
         }
@@ -1694,7 +1735,7 @@ const marketSystem = function () {
         Memory.market.base = {};
         Memory.market.tier3 = {};
 
-        Memory.market.primary['energy'] = {lowestPriceKey: 1, highestPriceKey: 1};
+        Memory.market.primary['energy'] = {lowestPriceKey: 0.9, highestPriceKey: 1};
         Memory.market.primary['power'] = {lowestPriceKey: 0.3, highestPriceKey: 0.5};
         Memory.market.primary['ops'] = {lowestPriceKey: 1, highestPriceKey: 0.1};
 
@@ -1720,10 +1761,32 @@ const marketSystem = function () {
 
     }
 
+    //if (Game.time % 300 === 0) {
+        for(const id in Game.market.orders) {
+
+            console.log(Game.market.orders[id].active + '   ' + Game.market.orders[id].amount + '  ' + Game.market.orders[id].created + ' Before the if -----');
+           if (Game.market.orders[id].active === false && Game.market.orders[id].amount === 0 && Game.market.orders[id].created < Game.time + 100) {
+            console.log(Game.market.orders[id].active + '   ' + Game.market.orders[id].amount + '  ' + Game.market.orders[id].created + ' Inside the if statement  ' + id + Game.market.orders[id].roomName);
+               //console.log(Game.market.cancelOrder(id) + '  -------  Checking the Cancel Order Function.  ------' );
+           }
+        } 
+    //}
+
     for (const name in Game.rooms) {
         const r = Game.rooms[name];
 
-        if (!r.terminal || r.terminal.cooldown > 0 || r.terminal.store['energy'] < 40000) continue;
+        if (!r.terminal || r.terminal.cooldown > 0) continue;
+
+        if ((!r.terminal.store['energy'] || r.terminal.store['energy'] < 50000) && Game.market.credits > 39000 && _.sum(r.terminal.store) < 200000) { // Check for and/or Replace Energy
+
+            const be = Game.market.getAllOrders(order => order.resourceType === 'energy' && order.type === 'buy' && order.roomName === r.name);
+
+            if(be[0] === undefined) Game.market.createOrder('buy', 'energy', 0.014, 120000, r.name);
+
+
+        }
+
+        if (r.terminal.store['energy'] < 40000) continue;
 
         if (r.memory.labs.type && Game.market.credits > 100000 && _.sum(r.terminal.store) < 300000) {   //  If Labs are Installed(Memorized) - Check for Minerals in room Terminal.
 
@@ -1759,7 +1822,6 @@ const marketSystem = function () {
 
         }
 
-
         if ((!r.terminal.store['power'] || r.terminal.store['power'] < 1400) && Game.market.credits > 30000 && _.sum(r.terminal.store) < 285000) { // Check for and/or Replace Power
 
             const buyPower = Game.market.getAllOrders(order => order.resourceType === 'power' && order.type === 'sell' &&
@@ -1793,9 +1855,6 @@ const marketSystem = function () {
         }
 
 
-
-
-
         if (_.sum(r.terminal.store) > 90000) { // Check Terminal Storage before selling
 
             const minType = ['H', 'O', 'U', 'L', 'K', 'Z', 'X', 'G']; // Mineral Types
@@ -1804,7 +1863,7 @@ const marketSystem = function () {
 
             while (i < 8) {
 
-                if (r.terminal.store[minType[i]] >= 30000) { // Check Mineral Type in Storage (if 30,000+ sell)
+                if (r.terminal.store[minType[i]] >= 10000) { // Check Mineral Type in Storage (if 30,000+ sell)
 
                     const sale = Game.market.getAllOrders(order => order.resourceType === minType[i] && order.type === 'buy' &&
                         Game.market.calcTransactionCost(30000, name, order.roomName) < 40000);
@@ -1816,7 +1875,7 @@ const marketSystem = function () {
                         if (sale[maxKey].price > Memory.market.base[minType[i]].highestPriceKey) Memory.market.base[minType[i]].highestPriceKey = sale[maxKey].price;
 
                         if (sale[maxKey].price > Memory.market.base[minType[i]].highestPriceKey / 1.185) {
-                            if (Game.market.deal(sale[maxKey].id, 30000, name) === OK)  i = 10;                       
+                            if (Game.market.deal(sale[maxKey].id, sale[maxKey].amount, name) === OK) i = 10;
                         }
 
                     }
@@ -1850,6 +1909,7 @@ const marketSystem = function () {
     }
 
     if (Game.time > Memory.market.marketReset) Memory.market = undefined;
+
 };
 
 
@@ -1943,15 +2003,12 @@ const getObjective = function () {
                                 xbase = getBases(flag);
                                 if (xbase === undefined) continue;
             
-                                warpClaimer(xbase, getEnergyStatus(xbase), getName(),
+                                warpingUnits(xbase, getEnergyStatus(xbase), getName(),
                                     { memory: { role: 'claimer', status: 'claiming', hroom: xbase.room.name, troom: flag.pos.roomName } });
                                 flag.remove();
                             }
                             continue;
-            
-                        //case COLOR_YELLOW:
-                        //return new DirectiveSKOutpost(flag);
-            
+                                         
                         case COLOR_WHITE:
                             /// Warp Claimers ///  ----====[ Reserve ]====----
                             if (flag.memory.setTime === undefined) flag.memory.setTime = Game.time;
@@ -1961,20 +2018,8 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpClaimer(xbase, getEnergyStatus(xbase), getName(), { memory: { role: 'claimer', status: 'reserving', hroom: xbase.room.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y } });
-                            continue;
-            
-                        //case COLOR_GREY:
-                        //return new DirectiveColonize(flag);
-            
-                        //case COLOR_GREEN:
-                           /* /// Drop Ramparts on structures ///  --==[Fortify]==--
-                            xbase = getBases(flag);
-                            const cstrmp = Game.rooms[base].find(FIND_STRUCTURES);
-                            unitCount = _.reject(cstrmp, { structureType: STRUCTURE_WALL, structureType: STRUCTURE_RAMPART, structureType: STRUCTURE_ROAD });
-                            unitCount.forEach((ss) => { xbase.room.createConstructionSite(ss.pos.x, ss.pos.y, STRUCTURE_RAMPART) });
-                            flag.remove();
-                            continue;*/
+                            warpingUnits(xbase, getEnergyStatus(xbase), getName(), { memory: { role: 'claimer', status: 'reserving', hroom: xbase.room.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y } });
+                            continue;                     
             
                     }
                     continue;
@@ -1985,7 +2030,7 @@ const getObjective = function () {
             
                         case COLOR_RED:
                             /// Warp Group Small Zealots --Assault Force-- ///
-                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'smallzealot' &&
+                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'altzealot' &&
                                 c.memory.hroom === flag.name &&
                                 c.memory.troom === flag.pos.roomName);
                             if (fcc > 0) { flag.remove(); continue }
@@ -1993,16 +2038,13 @@ const getObjective = function () {
                                 s.room.energyAvailable > s.room.energyCapacityAvailable / 2);
                             if (!xb[0]) continue;
             
-                            warpSmallZealot(xb[0], 5, 'Zealot-' + Game.time.toString(36),
-                                { memory: { role: 'smallzealot', hroom: flag.name, troom: flag.pos.roomName, atkX: flag.pos.x, atkY: flag.pos.y } });
-                            continue;
-            
-                        //case COLOR_CYAN:
-                        //return new DirectiveDestroy(flag);
+                            warpingUnits(xb[0], 5, 'Zealot-' + Game.time.toString(36),
+                                { memory: { role: 'altzealot', hroom: flag.name, troom: flag.pos.roomName, atkX: flag.pos.x, atkY: flag.pos.y } });
+                            continue;                                 
             
                         case COLOR_PURPLE:
                             /// Warp Group Small Zealots --Assault Force-- ///
-                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'smallzealot' &&
+                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'altzealot' &&
                                 c.memory.hroom === flag.name &&
                                 c.memory.troom === flag.pos.roomName);
                             if (fcc > 0) { flag.remove(); continue }
@@ -2010,13 +2052,13 @@ const getObjective = function () {
                                 s.room.energyAvailable > s.room.energyCapacityAvailable / 2);
                             if (!xb[0]) continue;
             
-                            warpSmallZealot(xb[0], 3, 'Zealot-' + Game.time.toString(36),
-                                { memory: { role: 'smallzealot', hroom: flag.name, troom: flag.pos.roomName, atkX: flag.pos.x, atkY: flag.pos.y } });
+                            warpingUnits(xb[0], 3, 'Zealot-' + Game.time.toString(36),
+                                { memory: { role: 'altzealot', hroom: flag.name, troom: flag.pos.roomName, atkX: flag.pos.x, atkY: flag.pos.y } });
                             continue;
             
                         case COLOR_BLUE:
                             /// Warp Zealot Sentry --Source Keeper Force-- ///
-                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'zealotfar' &&
+                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'zealot' &&
                                 c.memory.hroom === flag.name &&
                                 c.memory.troom === flag.pos.roomName);
                             if (fcc > 0) { flag.remove(); continue }
@@ -2024,8 +2066,8 @@ const getObjective = function () {
                                 s.room.energyAvailable > s.room.energyCapacityAvailable / 2);
                             if (xbase === undefined) continue;
             
-                            warpSmallZealot(xb[0], getEnergyStatus(xb[0]), 'Zealot-' + Game.time.toString(36),
-                                { memory: { role: 'zealotfar', hroom: flag.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y, status: 'sk' } });
+                            warpingUnits(xb[0], getEnergyStatus(xb[0]), 'Zealot-' + Game.time.toString(36),
+                                { memory: { role: 'zealot', hroom: flag.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y, status: 'sk' } });
                             continue;
                     }
                     continue;
@@ -2039,9 +2081,7 @@ const getObjective = function () {
                             i = 0;
                             fcc = _.sum(Game.creeps, (c) => c.memory.role === 'stalker' && c.memory.troom === flag.pos.roomName);
 
-                            //if (flag.name === '2' || '3' || '4' || '5' || '6' || '7' || '8' || '9') i = flag.name;
-                            if (flag.name.slice(0, 7) === 'Ranged-') i =  flag.name.slice(7);
-                            
+                            if (flag.name.slice(0, 7) === 'Ranged-') i =  flag.name.slice(7);                        
 
                             if (fcc > i) { 
                                 flag.remove(); 
@@ -2051,7 +2091,7 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpStalker(xbase, getEnergyStatus(xbase), 'Stalker-' + Game.time.toString(36),
+                            warpingUnits(xbase, getEnergyStatus(xbase), 'Stalker-' + Game.time.toString(36),
                                 { memory: { role: 'stalker', hroom: xbase.room.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y } });
                             continue;  
 
@@ -2060,7 +2100,6 @@ const getObjective = function () {
                             i = 0;
                             fcc = _.sum(Game.creeps, (c) => c.memory.role === 'darkone' && c.memory.troom === flag.pos.roomName);
 
-                            //if (flag.name === '2' || '3' || '4' || '5' || '6' || '7' || '8' || '9') i = flag.name;
                             if (flag.name.slice(0, 8) === 'DarkOne-') i =  flag.name.slice(8);
                             
                             if (fcc > i) { 
@@ -2087,14 +2126,14 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpTemplar(xbase, getEnergyStatus(xbase), 'Templar-' + Game.time.toString(36),
+                            warpingUnits(xbase, getEnergyStatus(xbase), 'Templar-' + Game.time.toString(36),
                                 { memory: { role: 'templarpriest', hroom: xbase.room.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y } });
                             continue;
             
                         case COLOR_PURPLE:
                             /// Warp Long Range Defense Zealots ///
                             i = 0;
-                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'zealotfar' && c.memory.troom === flag.pos.roomName);
+                            fcc = _.sum(Game.creeps, (c) => c.memory.role === 'zealot' && c.memory.troom === flag.pos.roomName);
 
                             if (flag.name.slice(0, 7) === 'Zealot-') i =  flag.name.slice(7);
                             if (fcc > i) { flag.remove(); continue }
@@ -2102,8 +2141,8 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpZealot(xbase, getEnergyStatus(xbase), 'Zealot-' + Game.time.toString(36),
-                                { memory: { role: 'zealotfar', hroom: xbase.room.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y } });
+                            warpingUnits(xbase, getEnergyStatus(xbase), 'Zealot-' + Game.time.toString(36),
+                                { memory: { role: 'zealot', hroom: xbase.room.name, troom: flag.pos.roomName, x: flag.pos.x, y: flag.pos.y } });
                             continue;
                     }
                     continue;
@@ -2113,19 +2152,14 @@ const getObjective = function () {
                     switch (flag.secondaryColor) {
                         case COLOR_ORANGE:
                             
-                            if(Game.powerCreeps[flag.name].spawn(Game.getObjectById(flag.room.memory.powerSpawn)) === OK) flag.remove();
-
-                        //case COLOR_BLUE:
-                            //return new DirectiveNukeResponse(flag);
+                            if(Game.powerCreeps[flag.name].spawn(Game.getObjectById(flag.room.memory.powerSpawn)) === OK) flag.remove(); 
+                        
                     }
                     continue; 
             
                 // Resource operations -=========================================================================================-
                 case COLOR_YELLOW:
                     switch (flag.secondaryColor) {
-            
-                        //case COLOR_YELLOW:
-                        //return new DirectiveHarvest(flag);
             
                         case COLOR_CYAN:
                             /// Warp Single Long Range Regular Builder /// ****** YELLOW / CYAN ******
@@ -2135,16 +2169,13 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpWorker(xbase, getEnergyStatus(xbase), getName(), { memory: { role: 'bldfar', hroom: xbase.room.name, troom: flag.pos.roomName } });
+                            warpingUnits(xbase, getEnergyStatus(xbase), getName(), { memory: { role: 'bldfar', hroom: xbase.room.name, troom: flag.pos.roomName } });
                             continue;
             
                         case COLOR_ORANGE:
                             /// Warp Dual Long Range Builders /// ****** YELLOW / ORANGE ******
                             i = 1; // Default of 1 (any number of builders greater than 1 removes flag)
-                            if (flag.name.slice(0, 10) === 'FarBuilder-') {
-                                i = flag.name.slice(10); //  Flag name includes number to reach to remove flag and cease calling units I.E. 'FarBuilder-4' will call 4 additional builders(5 total)
-                                console.log('Far Builder Flag Numbering Test: ' + i);
-                            }
+                            if (flag.name.slice(0, 11) === 'FarBuilder-') i = flag.name.slice(11); //  Flag name includes number to reach to remove flag and cease calling units I.E. 'FarBuilder-4' will call 4 additional builders(5 total)                                                     
 
                             fcc = _.sum(Game.creeps, (c) => c.memory.role === 'bldfar' && c.memory.troom === flag.pos.roomName);
                             if (fcc > i) { flag.remove(); continue }
@@ -2152,7 +2183,7 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpWorker(xbase, getEnergyStatus(xbase), getName(), { memory: { role: 'bldfar', hroom: xbase.room.name, troom: flag.pos.roomName } });
+                            warpingUnits(xbase, getEnergyStatus(xbase), getName(), { memory: { role: 'bldfar', hroom: xbase.room.name, troom: flag.pos.roomName } });
                             continue;
             
                         case COLOR_BLUE:
@@ -2179,7 +2210,7 @@ const getObjective = function () {
                                 xbase = getBases(flag);
                                 if (xbase === undefined) continue;
             
-                                warpProbe(xbase, getEnergyStatus(xbase), 'Probe-' + Game.time.toString(36), 
+                                warpingUnits(xbase, getEnergyStatus(xbase), 'Probe-' + Game.time.toString(36), 
                                 { memory: { role: 'probefar', hroom: xbase.room.name, troom: flag.pos.roomName, wSrc: wS, x: wcX, y: wcY } });
                                 continue;
                             }
@@ -2192,7 +2223,7 @@ const getObjective = function () {
                                 xbase = getBases(flag);
                                 if (xbase === undefined) continue;
             
-                                warpAssim(xbase, getEnergyStatus(xbase), 'Assimilator-' + Game.time.toString(36), { memory: { role: 'assimfar', hroom: xbase.room.name, troom: flag.pos.roomName } })
+                                warpingUnits(xbase, getEnergyStatus(xbase), 'Assimilator-' + Game.time.toString(36), { memory: { role: 'assimfar', hroom: xbase.room.name, troom: flag.pos.roomName } })
                                 continue;
                             }
                             continue;
@@ -2205,32 +2236,26 @@ const getObjective = function () {
                             xbase = getBases(flag);
                             if (xbase === undefined) continue;
             
-                            warpAssim(xbase, getEnergyStatus(xbase), 'Assimilator-' + Game.time.toString(36), { memory: { role: 'assimfar', hroom: xbase.room.name, troom: flag.pos.roomName } })
+                            warpingUnits(xbase, getEnergyStatus(xbase), 'Assimilator-' + Game.time.toString(36), { memory: { role: 'assimfar', hroom: xbase.room.name, troom: flag.pos.roomName } })
                             continue;
                     }
+                    continue; 
+                    
+                // Construction and Restoring operations -=========================================================================================-
+                case COLOR_GREY:
+                    switch (flag.secondaryColor) {
+
+                        case COLOR_GREY:
+                            const fsd = flag.pos.lookFor(LOOK_STRUCTURES);
+                            if(fsd[0]) {
+                               if (fsd[0].hits < fsd[0].hitsMax * 0.55) flag.memory.structureType = fsd[0].structureType;
+                               if (fsd[0].hits === fsd[0].hitsMax) flag.remove();
+                            }
+
+                            if (!fsd[0]) flag.pos.createConstructionSite(flag.memory.structureType);
+
+                    }
                     continue;
-                /*               
-                // Terminal operations -===================================================================================-
-                    case COLOR_BROWN:
-                        switch (flag.secondaryColor) {
-                            case COLOR_RED:
-                                return new DirectiveTerminalEvacuateState(flag);
-                            case COLOR_ORANGE:
-                                return new DirectiveTerminalEmergencyState(flag);
-                            case COLOR_YELLOW:
-                                return new DirectiveTerminalRebuildState(flag);
-                        }
-                        continue;
-                        
-                // Targeting colors -=========================================================================================-
-                    case COLOR_GREY:
-                        switch (flag.secondaryColor) {
-                            case COLOR_ORANGE:
-                                return new DirectiveTargetSiege(flag);
-                            case COLOR_YELLOW:
-                                return new DirectiveDismantle(flag);
-                        }
-                        continue;*/
             
                 // Room planning operations -=============[Neutral Flags - memoryCheck: true to ignore in future checks]====================-
                 case COLOR_WHITE:
@@ -2303,8 +2328,6 @@ const getObjective = function () {
                                 if (r.memory.lockSpots.pwrCreep === undefined) r.memory.lockSpots.pwrCreep = {};
 
                                 r.memory.lockSpots.pwrCreep[pC.name] = {};
-
-
                                 r.memory.lockSpots.pwrCreep[pC.name].x = flag.pos.x;
                                 r.memory.lockSpots.pwrCreep[pC.name].y = flag.pos.y;
                                 flag.remove();
@@ -2315,19 +2338,7 @@ const getObjective = function () {
                                 flag.memory.hroom = flag.pos.roomName;
                                 nukerSystem(flag);
                                 continue;
-                            }
-            
-                            if (flag.name.slice(0, 6) === 'Build-') {
-                                flag.room.memory.baseBuilder = {}
-                                flag.room.memory.baseBuilder.buildname = flag.name;
-                                flag.room.memory.baseBuilder.pos = {}
-                                flag.room.memory.baseBuilder.pos.x = flag.pos.x;
-                                flag.room.memory.baseBuilder.pos.y = flag.pos.y;
-                                flag.room.memory.baseBuilder.timers = {};
-                                flag.room.memory.baseBuilder.links = {};
-                                flag.room.memory.baseBuilder.containers = {};
-                            }
-                            continue;
+                            }                        
 
                         case COLOR_YELLOW:
                             /// Mark Links to be filled by Assimilators
@@ -2347,13 +2358,7 @@ const getObjective = function () {
                         case COLOR_GREY:
                             roomRoads(flag);
                             continue;
-            /*
-                        case COLOR_GREEN:
-                            return new DirectiveRPHatchery(flag);
-                        case COLOR_BLUE:
-                            return new DirectiveRPCommandCenter(flag);
-                        case COLOR_RED:
-                            return new DirectiveRPBunker(flag); */
+           
                     }
             }
         }
@@ -2408,7 +2413,6 @@ const roles = function () {
             }
         }
 
-
         if (creep.ticksToLive < 2) creep.say(cSpeak(8), [true]);
 
         switch (creep.memory.role) {
@@ -2430,8 +2434,11 @@ const roles = function () {
                     continue;
                 }
 
-                creep.harvest(Game.getObjectById(creep.memory.wSource), RESOURCE_ENERGY);
+                creep.harvest(Game.getObjectById(creep.memory.wSource), 'energy');
                 continue;
+
+
+
 
 
 
@@ -2446,12 +2453,7 @@ const roles = function () {
                 if (creep.room.name === creep.memory.troom && (creep.ticksToLive < 2 || creep.hits < 100)) creep.pos.createFlag(undefined, COLOR_YELLOW, COLOR_BLUE);
 
                 if (Game.time % Math.floor(Math.random() * (40 - 4) + 2) === 0) creep.say(cSpeak(6), [true]);
-
-                if (creep.room.name !== creep.memory.troom) {
-                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
-                    continue;
-                }
-
+             
                 if (creep.room.name === creep.memory.troom) {
 
                     if (creep.pos.x !== creep.memory.x || creep.pos.y !== creep.memory.y) {
@@ -2459,9 +2461,15 @@ const roles = function () {
                         continue;
                     }
 
-                    creep.harvest(Game.getObjectById(creep.memory.wSrc), RESOURCE_ENERGY);
+                    creep.harvest(Game.getObjectById(creep.memory.wSrc), 'energy');
+                }
+
+                else {
+                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
                 }
                 continue;
+
+
 
 
 
@@ -2480,19 +2488,14 @@ const roles = function () {
 
                 if (creep.room.name === creep.memory.troom && (creep.ticksToLive < 2 || creep.hits < 100)) {
 
-                    const drpChk = creep.room.find(FIND_DROPPED_RESOURCES, { 
-                        filter: d => d.power > 2000 || d.energy > 2000 });
+                    const drpChk = creep.room.find(FIND_DROPPED_RESOURCES, { filter: d => d.power > 2000 || d.energy > 2000 });
 
-                    if (drpChk[0]){
-
-                        creep.pos.createFlag(undefined, COLOR_YELLOW, COLOR_BROWN);
-
+                    if (drpChk[0]) {
+                        creep.pos.createFlag(undefined, COLOR_YELLOW, COLOR_BROWN) 
                     }
-
+                    
                     else {
-
                         creep.pos.createFlag(undefined, COLOR_YELLOW, COLOR_BLUE);
-
                     }
 
                 }
@@ -2512,10 +2515,8 @@ const roles = function () {
                 if (creep.memory.storing) {
 
                     if (creep.room.name !== creep.memory.hroom) {
-
                         creep.moveTo(new RoomPosition(19, 23, creep.memory.hroom), { reusePath: 50 }); 
                         continue; 
-
                     }
 
                     if (creep.room.name === creep.memory.hroom) {
@@ -2525,18 +2526,14 @@ const roles = function () {
                             const targets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                                 filter: t => (t.structureType === 'extension' ||
                                     t.structureType === 'spawn' ||
-                                    t.structureType === 'powerSpawn' ||
                                     t.structureType === 'nuker') && t.energy < t.energyCapacity ||
-                                    t.structureType === 'container' && t.store[RESOURCE_ENERGY] < t.storeCapacity ||
+                                    t.structureType === 'container' && t.store['energy'] < t.storeCapacity ||
+                                    t.structureType === 'powerSpawn' && t.energy < 3400 ||
                                     t.structureType === 'link' && t.energy < 750 ||
                                     t.structureType === 'tower' && t.energy < 900 });
 
                             if (targets) {
-
-                                if (creep.transfer(targets, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                    creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
-                                }
-
+                                if (creep.transfer(targets, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
                                 continue;
                             }
                         }
@@ -2545,78 +2542,70 @@ const roles = function () {
 
                             const targets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                                 filter: p => (p.structureType === 'powerSpawn' && p.power < p.powerCapacity) ||
-                                p.structureType === 'storage' && t.store[RESOURCE_POWER] < p.storeCapacity ||
-                                p.structureType === 'terminal' && t.store[RESOURCE_POWER] < p.storeCapacity});
+                                p.structureType === 'storage' && t.store['power'] < p.storeCapacity ||
+                                p.structureType === 'terminal' && t.store['power'] < p.storeCapacity});
 
                             if (targets) {
-
-                                if (creep.transfer(targets, RESOURCE_POWER) === ERR_NOT_IN_RANGE) {
-                                    creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
-                                }
-
+                                if (creep.transfer(targets, 'power') === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });                             
                                 continue;
                             }
                         }
 
-                        if (creep.memory.hroom === creep.memory.troom) {
-                            if (creep.carry.power === 0 && Game.time % 5 === 0) creep.memory.role = 'assim';
+                        if (creep.room.terminal) {
+                            if (creep.room.terminal.store['energy'] < 150000) {
+                                if (creep.transfer(creep.room.terminal, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });                             
+                                continue;
+                            }
                         }
+
+                        if (creep.memory.hroom === creep.memory.troom && creep.carry.power === 0 && Game.time % 5 === 0) creep.memory.role = 'assim';                       
                     }
                 } 
                 
                 else {
 
-                    if (creep.room.name !== creep.memory.troom) { 
-                        creep.moveTo(new RoomPosition(28, 35, creep.memory.troom), { reusePath: 50 }); 
-                        continue;
-                    }
-
                     if (creep.room.name === creep.memory.troom) {
 
-                        const dep = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { 
-                            filter: d => d.power > 10 || d.energy > (creep.carryCapacity / 2) });
+                        const dep = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.power > 10 || d.energy > (creep.carryCapacity / 2) });
 
                         if (dep) {
 
                             if (dep.resourceType === 'energy') {
-                                if (creep.pickup(dep, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                                if (creep.pickup(dep, 'energy') === ERR_NOT_IN_RANGE) {
                                     creep.moveTo(dep, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
+                                    continue;
                                 }
+
+                                const tc = creep.pos.findInRange(FIND_STRUCTURES, 1, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] > 100 });
+                                if (tc[0]) creep.withdraw(tc[0], 'energy');
                                 continue;
                             }
 
                             if (dep.resourceType === 'power') {
-                                if (creep.pickup(dep, RESOURCE_POWER) === ERR_NOT_IN_RANGE) {
-                                    creep.moveTo(dep, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
-                                }
+                                if (creep.pickup(dep, 'power') === ERR_NOT_IN_RANGE) creep.moveTo(dep, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });                               
                                 continue;
                             }
                         }
 
-                        const sources = creep.pos.findClosestByRange(FIND_STRUCTURES, { 
-                            filter: s => s.structureType === 'container' && s.store[RESOURCE_ENERGY] >= creep.carryCapacity });
+                        const container = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === 'container' && s.store['energy'] >= creep.carryCapacity });
 
-                        if (sources) {
-
-                            if (creep.withdraw(sources, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
-
-                            }
-
+                        if (container) {
+                            if (creep.withdraw(container, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(container, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });                        
                             continue;
                         }
 
                         else {
-
-                            if (creep.pos.x === 0 || creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
-                                creep.moveTo(Math.floor(Math.random() * (40 - 1) + 1), Math.floor(Math.random() * (40 - 1) + 1), { reusePath: 0 });
-
-                            }
-                            
+                            if (creep.pos.x === 0 || creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) creep.moveTo(Math.floor(Math.random() * (40 - 1) + 1), Math.floor(Math.random() * (40 - 1) + 1), { reusePath: 0 });                                                           
                         }
+                    }
+
+                    else {
+                        creep.moveTo(new RoomPosition(28, 35, creep.memory.troom), { reusePath: 50 });                     
                     }
                 }
                 continue;
+
+
 
 
 
@@ -2645,32 +2634,26 @@ const roles = function () {
                 if (creep.memory.moving) {
                     const targets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: s => (s.structureType === 'extension' ||
-                            s.structureType === 'powerSpawn' ||
                             s.structureType === 'spawn' ||
                             s.structureType === 'lab' ||
                             s.structureType === 'nuker') && s.energy < s.energyCapacity ||
                             s.structureType === 'link' && s.id !== creep.room.memory.links.upgrader && s.energy < 100 ||
+                            s.structureType === 'powerSpawn' && s.energy < 3400 ||
                             s.structureType === 'tower' && s.energy < 400 });
 
                     if (targets) {
-                        if (creep.transfer(targets, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                        }
+                        if (creep.transfer(targets, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                       
                         continue;
                     }
 
                     if (creep.room.storage && creep.room.memory.utils['storing'].storageFill) {           
-                            if (creep.transfer(creep.room.storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
+                            if (creep.transfer(creep.room.storage, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });                          
                             continue;                       
                     }
 
                     if (creep.room.terminal) {
-                        if (creep.room.terminal.store[RESOURCE_ENERGY] < 100000) {
-                            if (creep.transfer(creep.room.terminal, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
+                        if (creep.room.terminal.store['energy'] < 150000) {
+                            if (creep.transfer(creep.room.terminal, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
                             continue;
                         }
                     }
@@ -2678,34 +2661,31 @@ const roles = function () {
 
                 else {
 
-                    const dropenergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > creep.carryCapacity / 8 });
+                    const dropenergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === 'energy' && d.energy > creep.carryCapacity / 8 });
 
                     if (dropenergy && !creep.carry['H'] && !creep.carry['G']) {
 
-                        if (creep.pickup(dropenergy, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(dropenergy, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });                       
+                        if (creep.pickup(dropenergy, 'energy') === ERR_NOT_IN_RANGE) {
+                            creep.moveTo(dropenergy, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });  
+                            continue;                     
                         }
 
+                        const tc = creep.pos.findInRange(FIND_STRUCTURES, 1, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] > 100 });
+                        if (tc[0]) creep.withdraw(tc[0], 'energy');
                         continue;
 
                     }                    
 
-                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= creep.carryCapacity });
+                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] >= creep.carryCapacity });
 
-                    if (creep.withdraw(bins, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    if (creep.withdraw(bins, 'energy') === ERR_NOT_IN_RANGE) {
                         creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
                         continue;
-
                     }
 
-                    if (creep.room.terminal && creep.room.terminal.store[RESOURCE_ENERGY] > 108000) {
-
-                            if (creep.withdraw(creep.room.terminal, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
-                            continue;
-                        
+                    if (creep.room.terminal && creep.room.terminal.store['energy'] > 108000) {
+                            if (creep.withdraw(creep.room.terminal, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
+                            continue;                    
                     }
 
                     if (creep.room.memory.nuke && creep.room.terminal.store['G'] && _.sum(creep.carry) === 0) {
@@ -2714,17 +2694,14 @@ const roles = function () {
 
                         if (nuke.ghodium < 5000) {
 
-                            if (!creep.carry['G'] && creep.withdraw(creep.room.terminal, 'G') === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
+                            let ghod = 5000 - nuke.ghodium;
+
+                            if (!creep.carry['G'] && creep.withdraw(creep.room.terminal, 'G', ghod) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });                       
                             continue;
                         }
 
                         if (creep.carry['G'] > 0 ) {
-
-                            if (creep.transfer(nuke, 'G') === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(nuke, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
+                            if (creep.transfer(nuke, 'G') === ERR_NOT_IN_RANGE) creep.moveTo(nuke, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });                       
                             continue;
                         }
 
@@ -2734,36 +2711,31 @@ const roles = function () {
                     if (creep.room.storage) {
 
                         if (creep.room.storage.store['H'] > 0 && _.sum(creep.carry) === 0 && creep.room.terminal && _.sum(creep.room.terminal.store) < 285000 ) {
-
-                            if (creep.withdraw(creep.room.storage, 'H') === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
+                            if (creep.withdraw(creep.room.storage, 'H') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
                             continue;
                         }
 
                         if (creep.carry['H'] > 0 ) {
-
-                            if (creep.transfer(creep.room.terminal, 'H') === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
-                            continue;
+                            if (creep.transfer(creep.room.terminal, 'H') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
+                             continue;
                         }
 
-                        if (!creep.room.memory.utils['storing'].storageFill || creep.room.storage.store[RESOURCE_ENERGY] > 2000 && creep.room.energyAvailable < 2000) {
-                            if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
-                            }
+                        if (!creep.room.memory.utils['storing'].storageFill || creep.room.storage.store['energy'] > 2000 && creep.room.energyAvailable < 2000) {
+                            if (creep.withdraw(creep.room.storage, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
                             continue;
                         }
                     }
 
-                    const notlost = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > 100 });
-
-                        if (notlost && creep.pickup(notlost, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(notlost, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });                       
-                        }
+                    const notlost = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === 'energy' && d.energy > 100 });
+                    if (notlost && creep.pickup(notlost, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(notlost, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });                       
+                        
                 }
                 continue;
+
+
+
+
+
 
 
 
@@ -2774,17 +2746,14 @@ const roles = function () {
 *                                   (___)\_\\___)   (__) \_/\_/(__\_)  (____/\____/(__)\____/(____/(____)(__\_)   (___//_/(___)     
 */
             case 'bldfar':
-                if (creep.ticksToLive < 2 || creep.hits < 100) {
-                    creep.pos.createFlag(undefined, COLOR_YELLOW, COLOR_CYAN);
-                }
 
+                if (creep.ticksToLive < 2 || creep.hits < 100) creep.pos.createFlag(undefined, COLOR_YELLOW, COLOR_CYAN);
+                
                 if (creep.room.name === creep.memory.hroom && creep.carry.energy < 50) {
-                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= creep.carryCapacity });
+
+                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] >= creep.carryCapacity });
                     if (bins) {
-                        if (creep.withdraw(bins, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 25 });
-                        }
+                        if (creep.withdraw(bins, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 25 });
                         continue;
                     }
                 }
@@ -2795,6 +2764,7 @@ const roles = function () {
                 }
 
                 if (creep.room.name === creep.memory.troom) {
+                    
                     if (creep.memory.building && creep.carry.energy === 0) {
                         creep.memory.building = false;
                         creep.say('🔄 collect', [true]);
@@ -2809,9 +2779,7 @@ const roles = function () {
 
                         const targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
                         if (targets) {
-                            if (creep.build(targets) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
-                            }
+                            if (creep.build(targets) === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
                             continue;
                         }
 
@@ -2821,62 +2789,49 @@ const roles = function () {
                                 s.hits < 1000000 && s.hits < s.hitsMax && s.structureType === 'constructedWall' });
 
                         if (repairs) {
-                            if (creep.repair(repairs) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(repairs, { visualizePathStyle: { stroke: '#0000FF' }, reusePath: 15, range: 3 });
-                            }
+                            if (creep.repair(repairs) === ERR_NOT_IN_RANGE) creep.moveTo(repairs, { visualizePathStyle: { stroke: '#0000FF' }, reusePath: 15, range: 3 });
                             continue;
                         }
 
                         if (creep.room.controller.my) {
-                            if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.controller, {visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
-                            }
+                            if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.controller, {visualizePathStyle: { stroke: '#ffffff' }, reusePath: 15 });
                             continue;
                         }
                     }
 
                     else {
 
-                        const dropped = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-                            filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > 50 });
+                        const dropped = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === 'energy' && d.energy > 50 });
 
                         if (dropped) {
-                            if (creep.pickup(dropped, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(dropped, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 20 });
-                            }
+                            if (creep.pickup(dropped, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(dropped, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 20 });
                             continue;
                         }
 
-                        const containers = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                            filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= creep.carryCapacity });
+                        const containers = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] >= creep.carryCapacity });
 
                         if (containers) {
-                            if (creep.withdraw(containers, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(containers, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
-                            }
+                            if (creep.withdraw(containers, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(containers, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
                             continue;
                         }
 
                         const sources = creep.pos.findClosestByRange(FIND_SOURCES, { filter: ss => ss.energy > 0 });
-                        if (creep.harvest(sources, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
-                        }
+                        if (creep.harvest(sources, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 15 });
                         continue;
                         
                     }
 
                     if (Game.time % 3 === 0) {
-
                         const roads = creep.pos.lookFor(LOOK_STRUCTURES);
-                        if(roads[0] && roads[0].structureType === 'road') {
-
-                            creep.move(Math.floor(Math.random() * (7 + 1)));
-
-                        }
+                        if(roads[0] && roads[0].structureType === 'road') creep.move(Math.floor(Math.random() * (7 + 1)));       
                     }
 
                 }
                 continue;
+
+
+
+
 
 
 
@@ -2892,23 +2847,22 @@ const roles = function () {
                     creep.memory.upgrading = false;
                     creep.say('🔄 collect', [true]);
                 }
+
                 if (!creep.memory.upgrading && creep.carry.energy === creep.carryCapacity) {
                     creep.memory.upgrading = true;
                     creep.say('⚡ energize', [true]);
                 }
-                if (creep.memory.upgrading) {
-                    if (Game.time % Math.floor(Math.random() * (40 - 4) + 4) === 0) { creep.say(cSpeak(7), [true]) }
 
-                    if (creep.room.controller.sign && creep.room.controller.sign.username !== creep.room.controller.owner.username) {
-                        creep.signController(creep.room.controller, ' 👽 ');
-                    }
+                if (creep.memory.upgrading) {
+
+                    if (Game.time % Math.floor(Math.random() * (40 - 4) + 4) === 0) creep.say(cSpeak(7), [true]);
+
+                    if (creep.room.controller.sign && creep.room.controller.sign.username !== creep.room.controller.owner.username) creep.signController(creep.room.controller, ' 👽 ');                  
 
                     const uC = _.filter(Game.flags, f => f.color === COLOR_WHITE && f.secondaryColor === COLOR_PURPLE && f.pos.roomName === creep.room.name);
-                    if (uC.length > 0) {
+                    if (uC[0]) {
                         creep.upgradeController(creep.room.controller);
-                        if (creep.pos.x !== uC[0].pos.x || creep.pos.y !== uC[0].pos.y) {
-                            creep.moveTo(uC[0], { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-                        }
+                        if (creep.pos.x !== uC[0].pos.x || creep.pos.y !== uC[0].pos.y) creep.moveTo(uC[0], { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
                         continue;
                     }
 
@@ -2923,29 +2877,26 @@ const roles = function () {
 
                     if (creep.room.memory.links.upgrader !== undefined) {
                         const upLink = Game.getObjectById(creep.room.memory.links.upgrader);
-                        if (upLink.energy > 0) {
-                            if (creep.withdraw(upLink, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(upLink, {visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });
-                            }
+                        if (upLink) {
+                            if (creep.withdraw(upLink, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(upLink, {visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 10 });
                             continue;
                         }
                     }
 
-                    if (creep.room.storage && creep.room.storage.store[RESOURCE_ENERGY] > 0) {
-                        if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-                        }
+                    if (creep.room.storage && creep.room.storage.store['energy'] > 0) {
+                        if (creep.withdraw(creep.room.storage, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.storage, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
                         continue;
                     }
 
-                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 198 });
-                    if (creep.withdraw(bins, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-                    }
-                    continue;
+                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] > 198 });
+                    if (creep.withdraw(bins, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
+
                 }
                 continue;
+
+
+
+
 
 
 
@@ -2956,21 +2907,22 @@ const roles = function () {
 *                                       (___)\_\\___)    (____/\____/(__)\____/(____/(____)(__\_)    (___//_/(___)     
 */
             case 'builder':
+
                 if (creep.memory.building && creep.carry.energy === 0) {
                     creep.memory.building = false;
                     creep.say('🔄 collect', [true]);
                 }
+
                 if (!creep.memory.building && creep.carry.energy === creep.carryCapacity) {
                     creep.memory.building = true;
                     creep.say('🚧 build', [true]);
                 }
+
                 if (creep.memory.building) {
 
                     const targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
                     if (targets) {
-                        if (creep.build(targets) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(targets, { visualizePathStyle: { stroke: '#0000FF' }, reusePath: 10, range: 3 });
-                        }
+                        if (creep.build(targets) === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#0000FF' }, reusePath: 10, range: 3 });
                         continue;
                     }
 
@@ -2981,34 +2933,30 @@ const roles = function () {
 
                 } else {
 
-                    const dropped = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-                        filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > 350 });
+                    const dropped = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === 'energy' && d.energy > 350 });
 
                     if (dropped) {
-                        if (creep.pickup(dropped, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(dropped, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 20 });
-                        }
+                        if (creep.pickup(dropped, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(dropped, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 20 });
                         continue;
                     }
 
-                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= creep.carryCapacity });
-                    if (bins != null) {
-                        if (creep.withdraw(bins, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-                        }
+                    const bins = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store['energy'] >= creep.carryCapacity });
+                    if (bins) {
+                        if (creep.withdraw(bins, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(bins, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
                         continue;
                     }
 
                     const sources = creep.pos.findClosestByRange(FIND_SOURCES);
                     if (sources) {
-                        if (creep.harvest(sources, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-                        }
-                        continue;
+                        if (creep.harvest(sources, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
                     }
                 }
                 continue;
+
+
+
+
+
 
 
 
@@ -3024,81 +2972,83 @@ const roles = function () {
                     creep.memory.repairing = false;
                     creep.say('🔄 collect', [true]);
                 }
+
                 if (!creep.memory.repairing && creep.carry.energy === creep.carryCapacity) {
                     creep.memory.repairing = true;
                     creep.say('🚧 repair', [true]);
                 }
+
                 if (creep.memory.repairing) {
                     // --------================== |||||   Attempt to reduce CPU usage choosing lowest hitpoints STRUCTURE_RAMPART to repair |||||==============--------
                     let tries;
                     let rxyz;
                     let rTargets;
+
                     tries = 0;
                     rxyz = 1000;
+
                     do {
-                        rTargets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                            filter: (s) => (s.structureType === STRUCTURE_RAMPART && s.hits <= rxyz) });
+
+                        rTargets = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => (s.structureType === STRUCTURE_RAMPART && s.hits <= rxyz) });
                         rxyz = rxyz * 2;
                         tries++;
+
                     } while (!rTargets && tries < 15);
 
                     if (rTargets) {
-                        if (creep.repair(rTargets) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(rTargets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
-                        }
+                        if (creep.repair(rTargets) === ERR_NOT_IN_RANGE) creep.moveTo(rTargets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
                         continue;
                     }
 
                     tries = 0;
                     rxyz = 1000;
+
                     do {
-                        rTargets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                            filter: (s) => (s.structureType === STRUCTURE_WALL && s.hits <= rxyz ) });
+
+                        rTargets = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => (s.structureType === STRUCTURE_WALL && s.hits <= rxyz ) });
                         rxyz = rxyz * 2;
                         tries++;
+
                     } while (!rTargets && tries < 15);
 
                     if (rTargets) {
-                        if (creep.repair(rTargets) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(rTargets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
-                        }
+                        if (creep.repair(rTargets) === ERR_NOT_IN_RANGE) creep.moveTo(rTargets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
                         continue;
                     }
 
                     tries = 0;
                     rxyz = 1000;
+
                     do {
-                        rTargets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                            filter: (s) => (s.hits <= rxyz && s.hits < s.hitsMax) });
+
+                        rTargets = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => (s.hits <= rxyz && s.hits < s.hitsMax) });
                         rxyz = rxyz * 2;
                         tries++;
+
                     } while (!rTargets && tries < 15);
 
                     if (rTargets) {
-                        if (creep.repair(rTargets) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(rTargets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
-                        }
+                        if (creep.repair(rTargets) === ERR_NOT_IN_RANGE) creep.moveTo(rTargets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
                         continue;
                     }
 
                 } else {
 
-                    const dropenergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-                        filter: (d) => { return (d.resourceType === RESOURCE_ENERGY && d.energy > 50) } });
+                    const dropenergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: (d) => { return (d.resourceType === 'energy' && d.energy > 50) } });
                     if (dropenergy) {
-                        if (creep.pickup(dropenergy, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(dropenergy, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                        }
+                        if (creep.pickup(dropenergy, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(dropenergy, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
                         continue;
                     }
 
                     const sources = creep.pos.findClosestByRange(FIND_SOURCES, { filter: (ss) => { return (ss.energy > 50) } });
-                    if (creep.harvest(sources, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' },reusePath: 10 });
-                    }
-                    continue;
+                    if (creep.harvest(sources, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(sources, { visualizePathStyle: { stroke: '#ffaa00' },reusePath: 10 });
+
                 }
                 continue;
+
+
+
+
 
 
 
@@ -3108,7 +3058,7 @@ const roles = function () {
 *                                   (___)___( ( ) (_      / _/  ) _) /    \/ (_/\(  O ) )(       _) ( ) )___(___) 
 *                                       (___)\_\\___)    (____)(____)\_/\_/\____/ \__/ (__)     (___//_/(___)     
 */
-            case 'zealotfar':
+            case 'zealot':
 
                 if (Game.time % Math.floor(Math.random() * (40 - 4) + 6) === 0) creep.say(cSpeak(6), [true]);
 
@@ -3122,23 +3072,20 @@ const roles = function () {
 
                 if (creep.room.name === creep.memory.troom) {
 
-                    const goFlag = Game.flags['Guard-' + creep.room.name];
-                    if (goFlag) {
-                        creep.moveTo(goFlag, { reusePath: 10 });
+                    const guardFlag = Game.flags['Guard-' + creep.room.name];
+                    if (guardFlag) {
+                        console.log ('Zealot Testing Guard Flag moveTo.  moveTo return: ', creep.moveTo(guardFlag, { reusePath: 10 }));
 
                         const hostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                        if (hostile && hostile.owner.username != 'Deltazulu') {
-                            creep.attack(hostile);
-                        }
-                    
+                        if (hostile && hostile.owner.username !== 'Deltazulu') creep.attack(hostile);                                          
                         continue;
                     }
 
                     const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    if (closestHostile && closestHostile.owner.username != 'Deltazulu') {
-                        if (creep.attack(closestHostile) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(closestHostile);
-                        }
+                    if (closestHostile && closestHostile.owner.username !== 'Deltazulu') {
+                        creep.attack(closestHostile);
+                        creep.heal(creep);
+                        creep.moveTo(closestHostile);                      
                         continue;
                     }
 
@@ -3146,7 +3093,7 @@ const roles = function () {
                     if (closestInjuredUnit) {
                         if (creep.heal(closestInjuredUnit) === ERR_NOT_IN_RANGE) {
                             creep.moveTo(closestInjuredUnit, { reusePath: 10 });
-                            creep.rangedHeal(closestHostile);
+                            creep.rangedHeal(closestInjuredUnit);
                         }
                         continue;
                     } 
@@ -3159,18 +3106,14 @@ const roles = function () {
                         if(structs[0]) {
                             if (creep.attack(structs[0]) === ERR_NOT_IN_RANGE) {
                                 creep.moveTo(strikeFlag);
-                                if (structs[0].structureType === 'powerBank' && structs[0].hits < 6000) {
-                                    creep.room.createFlag(structs[0].pos, undefined, COLOR_YELLOW, COLOR_BROWN);
-                                }
+                                if (structs[0].structureType === 'powerBank' && structs[0].hits < 6000) creep.room.createFlag(structs[0].pos, undefined, COLOR_YELLOW, COLOR_BROWN);                               
                             }
                             continue;
                         }
 
                         const creepz = strikeFlag.pos.lookFor(LOOK_CREEPS);
                         if(creepz[0]) {
-                            if (creep.attack(creepz[0]) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(strikeFlag);
-                            }
+                            if (creep.attack(creepz[0]) === ERR_NOT_IN_RANGE) creep.moveTo(strikeFlag);
                             continue;
                         }
 
@@ -3183,13 +3126,15 @@ const roles = function () {
                         if(roads[0] && roads[0].structureType === 'road')  creep.move(Math.floor(Math.random() * (7 + 1)));
 
                         const removeFlags = _.filter(Game.flags, f => f.pos.roomName === creep.room.name && f.color === COLOR_BLUE && f.secondaryColor === COLOR_PURPLE);
-                        if (removeFlags.length > 0) {
-                            removeFlags[0].remove();
-                        }
+                        if (removeFlags[0]) removeFlags[0].remove();                       
 
                     }
                 }
                 continue;
+
+
+
+
 
 
 
@@ -3206,6 +3151,7 @@ const roles = function () {
                     creep.memory.storing = false;
                     creep.say('🔄 mining');
                 }
+
                 if (!creep.memory.storing && creep.carry.energy === creep.carryCapacity) {
                     creep.memory.storing = true;
                     creep.say('🚧 storing');
@@ -3218,27 +3164,22 @@ const roles = function () {
 
                         const buildsite = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
                         if (buildsite) {
-                            if (creep.build(buildsite) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(buildsite, { visualizePathStyle: { stroke: '#0000FF' }, reusePath: 10, range: 3 });
-                            }
+                            if (creep.build(buildsite) === ERR_NOT_IN_RANGE) creep.moveTo(buildsite, { visualizePathStyle: { stroke: '#0000FF' }, reusePath: 10, range: 3 });                          
                             continue;
                         }
 
                         const repairstr = creep.pos.findInRange(FIND_STRUCTURES, 5, {
-                            filter: (s) => (s.hits < 1000 && s.structureType === 'constructedWall' ||
-                                s.hits < 13000 && s.structureType === 'rampart') });
+                                    filter: (s) => (s.hits < 1000 && s.structureType === 'constructedWall' ||
+                                                    s.hits < 13000 && s.structureType === 'rampart') });
+
                         if (repairstr.length > 0) {
-                            if (creep.repair(repairstr[0]) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(repairstr[0], { reusePath: 10, visualizePathStyle: { stroke: '#ffffff' }, range: 3 });
-                            }
+                            if (creep.repair(repairstr[0]) === ERR_NOT_IN_RANGE) creep.moveTo(repairstr[0], { reusePath: 10, visualizePathStyle: { stroke: '#ffffff' }, range: 3 });
                             continue;
                         }
 
                         const repairst = creep.pos.findInRange(FIND_STRUCTURES, 5, { filter: (s) => (s.hits < 251000 && s.hits < s.hitsMax) });
                         if (repairst.length > 0) {
-                            if (creep.repair(repairst[0]) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(repairst[0], { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
-                            }
+                            if (creep.repair(repairst[0]) === ERR_NOT_IN_RANGE) creep.moveTo(repairst[0], { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10, range: 3 });
                             continue;
                         }
 
@@ -3249,10 +3190,7 @@ const roles = function () {
                     }
 
                     if (creep.room.controller.level === 1) {
-                        if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                        }
-                        continue;
+                        if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
                     }
                     continue;
                 }
@@ -3263,23 +3201,19 @@ const roles = function () {
                     if (creep.room.controller.level === 1) {
 
                         const targets = Game.getObjectById(creep.memory.wSpawn);
-                        if (creep.transfer(targets, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                        }
+                        if (creep.transfer(targets, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
                         continue;
                     }
 
                     if (creep.room.controller.level > 1) {
 
                         const dfltT = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                            filter: (s) => {
-                                return (s.structureType === STRUCTURE_EXTENSION ||
-                                    s.structureType === STRUCTURE_SPAWN) && s.energy < s.energyCapacity ||
-                                    (s.structureType === STRUCTURE_TOWER) && s.energy < 501 } });
+                                    filter: (s) => { return (s.structureType === STRUCTURE_EXTENSION ||
+                                                            s.structureType === STRUCTURE_SPAWN) && s.energy < s.energyCapacity ||
+                                                            (s.structureType === STRUCTURE_TOWER) && s.energy < 501 } });
+
                         if (dfltT) {
-                            if (creep.transfer(dfltT, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(dfltT, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                            }
+                            if (creep.transfer(dfltT, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(dfltT, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                         
                         }
                         continue;
                     }
@@ -3287,21 +3221,18 @@ const roles = function () {
                 ///  -  Not Storing - Mine Source                                     
                 else {
 
-                    const dropenergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: (d) => { return (d.resourceType === RESOURCE_ENERGY && d.energy > 50) } });
+                    const dropenergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: (d) => { return (d.resourceType === 'energy' && d.energy > 50) } });
                     if (dropenergy) {
-                        if (creep.pickup(dropenergy, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(dropenergy);
-                        }
+                        if (creep.pickup(dropenergy, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(dropenergy);
                         continue;
                     }
 
                     const source = Game.getObjectById(creep.memory.wSource);
-                    if (creep.harvest(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-                    }
-                    continue;
+                    if (creep.harvest(source, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
+                    
                 }
                 continue;
+
 
 
 
@@ -3318,37 +3249,34 @@ const roles = function () {
             case 'claimer':
 
                 if (Game.time % Math.floor(Math.random() * (40 - 4) + 7) === 0) creep.say(cSpeak(6), [true]);
-
-                if (creep.room.name !== creep.memory.troom) { 
-                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
-                    continue; 
-                }
-
+                
                 if (creep.room.name === creep.memory.troom) {
 
                     if (creep.memory.status === 'reserving') {
 
-                        if (creep.ticksToLive < 2 || creep.hits < 100) {
-                            creep.pos.createFlag(undefined, COLOR_PURPLE, COLOR_WHITE);
-                        }
+                        if (creep.ticksToLive < 2 || creep.hits < 100) creep.pos.createFlag(undefined, COLOR_PURPLE, COLOR_WHITE);
+                        
 
                         if (creep.reserveController(creep.room.controller) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.controller, { reusePath: 50 });
                         continue;
                     }
 
                     if (creep.memory.status === 'claiming') {
-
                         if (creep.claimController(creep.room.controller) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.controller, { reusePath: 50 });
                         continue;
-
                     }
 
                     if (creep.memory.status === 'attacking') {
                         if (creep.attackController(creep.room.controller) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.controller, { reusePath: 50 });
                     }
-                    continue;
+
+                } else {
+                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
                 }
                 continue;
+
+
+
 
 
 
@@ -3360,48 +3288,44 @@ const roles = function () {
 *                               (___)___( ( ) (_     \___ \/ \/ \/    \/ (_/\/ (_/\   / _/  ) _) /    \/ (_/\(  O ) )(       _) ( ) )___(___) 
 *                                   (___)\_\\___)    (____/\_)(_/\_/\_/\____/\____/  (____)(____)\_/\_/\____/ \__/ (__)     (___//_/(___)     
 */
-            case 'smallzealot':
-                //////// -=-=-=-=-=-=-=-=-=-=-  Code intended to provoke enemy towers into expelling energy into creep on the boarder getting healed outside the room -=-=-=-=-=-=-=-=-
-                if (Game.time % Math.floor(Math.random() * (40 - 4) + 8) === 0) creep.say(cSpeak(6), [true]);
+            case 'altzealot':
 
-                if (creep.room.name !== creep.memory.troom) {
+                //////// -=-=-=-=-=-=-=-=-=-=-  Code intended to provoke enemy towers into expelling energy into creep on the boarder getting healed outside the room -=-=-=-=-=-=-=-=-
+                if (Game.time % Math.floor(Math.random() * (40 - 4) + 8) === 0) creep.say(cSpeak(6), [true]);               
+
+                if (creep.room.name === creep.memory.troom) {
+
+                    if (creep.hits < creep.hitsMax) {
+                        creep.moveTo(new RoomPosition(3, 44, creep.memory.hroom), { reusePath: 10 });
+                        continue;
+                    }
+
+                    const closestEnemyRampart = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+                        filter: (s) => (s.structureType === 'rampart') });
+
+                    if (closestEnemyRampart) {
+                        if (creep.dismantle(closestEnemyRampart) === ERR_NOT_IN_RANGE) creep.moveTo(closestEnemyRampart, { reusePath: 3 });
+                        continue;
+                    }
+
+                    const closestEnemyStructure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+                    if (closestEnemyStructure) {
+                        if (creep.attack(closestEnemyStructure) === ERR_NOT_IN_RANGE) creep.moveTo(closestEnemyStructure, { reusePath: 3 });
+                        continue;
+                    }
+
+                    const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                    if (closestHostile) {
+                        if (creep.attack(closestHostile) === ERR_NOT_IN_RANGE) creep.moveTo(closestHostile, { reusePath: 3 });
+                        continue;
+                    }
+                } else {
                     if (creep.hits < creep.hitsMax) {
                         const healer = creep.pos.findClosestByRange(FIND_MY_CREEPS, { filter: (c) => (c.getActiveBodyparts(HEAL) > 0) });
                         creep.moveTo(healer, { reusePath: 8 });
                         continue;
                     }
                     creep.moveTo(new RoomPosition(33, 8, creep.memory.troom), { reusePath: 10 });
-                    continue;
-                }
-                if (creep.room.name === creep.memory.troom) {
-                    if (creep.hits < creep.hitsMax) {
-                        creep.moveTo(new RoomPosition(3, 44, creep.memory.hroom), { reusePath: 10 });
-                        continue;
-                    }
-                    const closestEnemyRampart = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
-                        filter: (s) => (s.structureType === 'rampart') });
-
-                    if (closestEnemyRampart) {
-                        if (creep.dismantle(closestEnemyRampart) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(closestEnemyRampart, { reusePath: 3 });
-                        }
-                        continue;
-                    }
-
-                    const closestEnemyStructure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
-                    if (closestEnemyStructure) {
-                        if (creep.attack(closestEnemyStructure) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(closestEnemyStructure, { reusePath: 3 });
-                        }
-                        continue;
-                    }
-                    const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    if (closestHostile) {
-                        if (creep.attack(closestHostile) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(closestHostile, { reusePath: 3 });
-                        }
-                        continue;
-                    }
                 }
                 continue;
 
@@ -3415,12 +3339,8 @@ const roles = function () {
 *                                   (___)\_\\___)     (__) (____)\_)(_/(__)  \____/\_/\_/(__\_)    (___//_/(___)     
 */
             case 'templarpriest':
-                if (Game.time % Math.floor(Math.random() * (40 - 4) + 9) === 0) creep.say(cSpeak(6), [true]);
 
-                if (creep.room.name !== creep.memory.troom) {
-                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
-                    continue;
-                }
+                if (Game.time % Math.floor(Math.random() * (40 - 4) + 9) === 0) creep.say(cSpeak(6), [true]);
 
                 if (creep.room.name === creep.memory.troom) {
 
@@ -3431,7 +3351,6 @@ const roles = function () {
                             creep.memory.goX = Game.flags.HealerMover.pos.x;
                             creep.memory.goY = Game.flags.HealerMover.pos.y;
                         }
-
 
                         const theInjured = creep.pos.findClosestByRange(FIND_MY_CREEPS, { filter: (c) => (c.hits < c.hitsMax) });
                         if (theInjured) {
@@ -3472,12 +3391,16 @@ const roles = function () {
                                 creep.moveTo(Game.creeps[creep.memory.follow], { reusePath: 20 });
                                 creep.rangedHeal(Game.creeps[creep.memory.follow]);
                             }
-                            continue;
-
                         }
-                    }
+                    }                  
+                } else {
+                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
                 }
                 continue;
+
+
+
+
 
 
 
@@ -3505,9 +3428,7 @@ const roles = function () {
 
                     const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                     if (closestHostile && closestHostile.owner.username != 'Deltazulu') {
-                        if (creep.rangedAttack(closestHostile) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(closestHostile);
-                        }
+                        if (creep.rangedAttack(closestHostile) === ERR_NOT_IN_RANGE) creep.moveTo(closestHostile);
                         continue;
                     }
 
@@ -3532,9 +3453,7 @@ const roles = function () {
 
                         const creepz = strikeFlag.pos.lookFor(LOOK_CREEPS);
                         if(creepz[0]) {
-                            if (creep.rangedAttack(creepz[0]) === ERR_NOT_IN_RANGE) {
-                                creep.moveTo(strikeFlag);
-                            }
+                            if (creep.rangedAttack(creepz[0]) === ERR_NOT_IN_RANGE) creep.moveTo(strikeFlag);
                             continue;
                         }
 
@@ -3542,10 +3461,13 @@ const roles = function () {
                     }
 
                     if (Game.time % 3 === 0) {
-                        creep.moveTo(Math.floor(Math.random() * (40 - 1) + 1), Math.floor(Math.random() * (40 - 1) + 1), { plainCost: 0, reusePath: 0 });
+                        const roads = creep.pos.lookFor(LOOK_STRUCTURES);
+                        if(roads[0] && roads[0].structureType === 'road')  creep.move(Math.floor(Math.random() * (7 + 1)));
                         }
                     }
                 continue;
+
+
 
 
 
@@ -3622,6 +3544,7 @@ const roles = function () {
 
 
 
+
 /*                           ___  ___    ____  _  _  ____  ____   __    ___  ____  __  ____    ___  ___      
 *                        ___(___)/  _)  (  __)( \/ )(_  _)(  _ \ / _\  / __)(_  _)/  \(  _ \  (_  \(___)___  
 *                       (___)___ ) (_    ) _)  )  (   )(   )   //    \( (__   )( (  O ))   /   _) ( ___(___) 
@@ -3642,28 +3565,23 @@ const roles = function () {
                     creep.say('📦 store', [true]);
                 }
 
-                if (creep.memory.moving) {
-                    const targets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: s => (s.structureType === 'terminal' ||
-                            s.structureType === 'storage') && _.sum(s.store) < s.storeCapacity });
+                if (creep.memory.moving) {                
 
-                    if (targets) {
-                        const mine = Game.getObjectById(creep.room.memory.mineral);
+                    if (creep.room.terminal) {
                         
-                        if (creep.transfer(targets, mine.mineralType) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                            
-                        }
+                        if (creep.transfer(creep.room.terminal, creep.memory.mType) === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                            
                         continue;
                     }
-                }
-                
-                else {
+
+                } else {
 
                     const mine = Game.getObjectById(creep.room.memory.mineral);
 
+                    if (creep.memory.mType === undefined) creep.memory.mType = mine.mineralType;
+
                     if (_.sum(creep.carry) === 0) {
 
-                        const dr = creep.pos.lookFor('resources')[0];
+                        const dr = creep.pos.lookFor('resource')[0];
 
                         if (dr) {
                             creep.pickup(dr, dr.resourceType);
@@ -3675,20 +3593,17 @@ const roles = function () {
                     if (mine.ticksToRegeneration > 1000) {
 
                         if (_.sum(creep.carry) > 0) {
-
                             creep.memory.moving = true;
                             continue;
-
                         }
+
                         creep.memory.role = 'upgrader';
                         continue;
 
                     }
 
-                    if (creep.harvest(mine, mine.mineralType) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(mine, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
-
-                    }
+                    if (creep.harvest(mine, mine.mineralType) === ERR_NOT_IN_RANGE) creep.moveTo(mine, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 10 });
+                    
                 }
                 continue;
 
@@ -3696,6 +3611,7 @@ const roles = function () {
 
 
 
+                
 
 
                 
@@ -3719,9 +3635,8 @@ const roles = function () {
                     if (pS.power < 1) {
 
                         creep.memory.type = 'power';
-                    }
 
-                    else {
+                    } else {
 
                         if (creep.room.memory.labs.type && !creep.memory.type) {
 
@@ -3779,9 +3694,7 @@ const roles = function () {
                             continue;
                         }
 
-                    }
-
-                    else { // Not Power or Energy - Must be Minerals for Labs
+                    } else { // Not Power or Energy - Must be Minerals for Labs
 
                         const target = Game.getObjectById(creep.memory.lab);
                         if (creep.transfer(target, creep.memory.type) === ERR_NOT_IN_RANGE) {
@@ -3791,11 +3704,7 @@ const roles = function () {
 
                     }
 
-                }
-
-
-
-                else {   //   Not Moving Material -  Checking Material Sources -  Power / Energy / Minerals
+                } else {   //   Not Moving Material -  Checking Material Sources -  Power / Energy / Minerals
 
                     if (creep.memory.type === 'power' || creep.memory.type === 'energy') {
 
@@ -3809,44 +3718,31 @@ const roles = function () {
                         if (pwr.power > 0 && pwr.energy < 5000 - creep.carry.energy && creep.withdraw(creep.room.terminal, creep.memory.type) === ERR_NOT_IN_RANGE) {
                             creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
                             continue;
-                        }
 
-                        else { // Power or Energy is not needed - Move into Idle position if not already there and Check Moving Destinations again
+                        } else { // Power or Energy is not needed - Move into Idle position if not already there and Check Moving Destinations again
 
-                            if (creep.room.memory.lockSpots && creep.room.memory.lockSpots.pwrAssim && (creep.pos.x !== creep.room.memory.lockSpots.pwrAssim.x || creep.pos.y !== creep.room.memory.lockSpots.pwrAssim.y)) {
-                                creep.moveTo(creep.room.memory.lockSpots.pwrAssim.x, creep.room.memory.lockSpots.pwrAssim.y, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                            }
-
-                            creep.memory.moving = true;
+                            if (creep.room.memory.lockSpots && creep.room.memory.lockSpots.pwrAssim && (creep.pos.x !== creep.room.memory.lockSpots.pwrAssim.x || creep.pos.y !== creep.room.memory.lockSpots.pwrAssim.y)) creep.moveTo(creep.room.memory.lockSpots.pwrAssim.x, creep.room.memory.lockSpots.pwrAssim.y, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                          
+                                creep.memory.moving = true;
                         }
 
                         continue;
-                    }
 
-                    else {
+                    } else {
 
                         if (creep.withdraw(creep.room.terminal, creep.memory.type) === ERR_NOT_IN_RANGE) {
                             creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
+                            continue;
                         }
 
                         if (creep.carry[creep.memory.type] > 0) {
                             creep.memory.moving = true;
-                            creep.say('📦 store', [true]);
-                        }
+                            creep.say('📦 store', [true]);                         
+                        } else {
 
-                        else {
-
-                            if (creep.room.memory.lockSpots && creep.room.memory.lockSpots.pwrAssim && creep.room.memory.lockSpots.pwrAssim.x && (creep.pos.x !== creep.room.memory.lockSpots.pwrAssim.x || creep.pos.y !== creep.room.memory.lockSpots.pwrAssim.y)) {
-                                creep.moveTo(creep.room.memory.lockSpots.pwrAssim.x, creep.room.memory.lockSpots.pwrAssim.y, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });
-                                continue;
-                            }
-                            
-                            creep.memory.moving = true;
+                            if (creep.room.memory.lockSpots && creep.room.memory.lockSpots.pwrAssim && creep.room.memory.lockSpots.pwrAssim.x && (creep.pos.x !== creep.room.memory.lockSpots.pwrAssim.x || creep.pos.y !== creep.room.memory.lockSpots.pwrAssim.y)) creep.moveTo(creep.room.memory.lockSpots.pwrAssim.x, creep.room.memory.lockSpots.pwrAssim.y, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                           
+                                creep.memory.moving = true;
 
                         }
-
-                        continue;
-
                     }
 
                 }
@@ -3854,6 +3750,10 @@ continue;
         }
     }
 };
+
+
+
+
 
 
 
@@ -3879,13 +3779,11 @@ const pwrCreeps = function () {
 
         if (pC.className === 'operator' && pC.ticksToLive > 0) {
 
-            if (pC.powers[PWR_GENERATE_OPS] && pC.powers[PWR_GENERATE_OPS].cooldown === 0) {
-                pC.usePower(PWR_GENERATE_OPS);
-            }
-
-            const pS = Game.getObjectById(pC.room.memory.powerSpawn);
-
             if (Game.time % Math.floor(Math.random() * (40 - 4) + 21) === 0) pC.say(cSpeak(6), [true]);
+
+            if (pC.powers[PWR_GENERATE_OPS] && pC.powers[PWR_GENERATE_OPS].cooldown === 0) pC.usePower(PWR_GENERATE_OPS);
+            
+            const pS = Game.getObjectById(pC.room.memory.powerSpawn);
 
             if (!pC.room.controller.isPowerEnabled) {
                 if (pC.enableRoom(pC.room.controller) === ERR_NOT_IN_RANGE) {
@@ -3925,6 +3823,8 @@ const pwrCreeps = function () {
                             continue;
                         }
 
+                        pC.room.memory.utils.regenSource = true;
+
                     }
 
                     if (pC.room.memory.src2Id) {
@@ -3945,6 +3845,27 @@ const pwrCreeps = function () {
                 }
             }
 
+            if (pC.powers[PWR_REGEN_MINERAL] && pC.powers[PWR_REGEN_MINERAL].cooldown === 0) {
+
+                if (pC.room.memory.mineral) {
+
+                    const mineral0 = Game.getObjectById(pC.room.memory.mineral);
+
+                    if (mineral0.effects && mineral0.effects[0]) console.log ('Mineral Power Effects: ' + mineral0.effects[0].power + '   Ticks remaining: ' + mineral0.effects[0].ticksRemaining);
+
+                    if ((!mineral0.effects || !mineral0.effects[0]) && mineral0.mineralAmount > 1000) {
+
+                        if (pC.usePower(PWR_REGEN_MINERAL, mineral0) === ERR_NOT_IN_RANGE) {
+                            pC.moveTo(mineral0, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                            continue;
+                        }
+
+                        pC.room.memory.utils.regenMineral = true;
+
+                    }
+                }
+            }
+
 
             if (pC.memory.generate === true) {
 
@@ -3956,11 +3877,11 @@ const pwrCreeps = function () {
                     }
                 }
 
-                if (pC.room.storage.store['ops'] > pC.carryCapacity * 2) pC.memory.generate = false;
+                if (pC.carryCapacity > 600 && pC.room.storage.store['ops'] > pC.carryCapacity * 2) pC.memory.generate = false;
+                if (pC.carryCapacity < 601 && pC.room.storage.store['ops'] > 40000) pC.memory.generate = false;
 
                 if (pC.room.memory.lockSpots && pC.room.memory.lockSpots.pwrCreep && pC.room.memory.lockSpots.pwrCreep[pC.name]) {
-                    if (pC.pos.x !== pC.room.memory.lockSpots.pwrCreep[pC.name].x || pC.pos.y !== pC.room.memory.lockSpots.pwrCreep[pC.name].y)
-                    pC.moveTo(pC.room.memory.lockSpots.pwrCreep[pC.name].x, pC.room.memory.lockSpots.pwrCreep[pC.name].y, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                    if (pC.pos.x !== pC.room.memory.lockSpots.pwrCreep[pC.name].x || pC.pos.y !== pC.room.memory.lockSpots.pwrCreep[pC.name].y) pC.moveTo(pC.room.memory.lockSpots.pwrCreep[pC.name].x, pC.room.memory.lockSpots.pwrCreep[pC.name].y, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
                 }
 
                 continue;
@@ -4035,7 +3956,7 @@ const pwrCreeps = function () {
 
             }
 
-            if(pC.powers[PWR_OPERATE_POWER] && pC.powers[PWR_OPERATE_POWER].cooldown === 0 && pC.carry['ops'] > 200 && pC.room.terminal.store['energy'] > 55000 && pC.room.terminal.store['power'] > 6000) {
+            if(pC.powers[PWR_OPERATE_POWER] && pC.powers[PWR_OPERATE_POWER].cooldown === 0 && pC.carry['ops'] > 200 && pC.room.terminal.store['energy'] > 10000 && pC.room.terminal.store['power'] > 1500) {
                 
                 if (pC.usePower(PWR_OPERATE_POWER, pS) === ERR_NOT_IN_RANGE) {
                     pC.moveTo(pS, { reusePath: 10, ignoreRoads: true, swampCost: 1, range: 3 });
@@ -4054,10 +3975,27 @@ const pwrCreeps = function () {
 
            // if (Game.flags['Idle-001']) pC.moveTo(Game.flags['Idle-001'], { reusePath: 10, ignoreRoads: true, swampCost: 1 });
            if (pC.room.memory.lockSpots && pC.room.memory.lockSpots.pwrCreep && pC.room.memory.lockSpots.pwrCreep[pC.name]) {
-               if (pC.pos.x !== pC.room.memory.lockSpots.pwrCreep[pC.name].x || pC.pos.y !== pC.room.memory.lockSpots.pwrCreep[pC.name].y)
-               pC.moveTo(pC.room.memory.lockSpots.pwrCreep[pC.name].x, pC.room.memory.lockSpots.pwrCreep[pC.name].y, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+               if (pC.pos.x !== pC.room.memory.lockSpots.pwrCreep[pC.name].x || pC.pos.y !== pC.room.memory.lockSpots.pwrCreep[pC.name].y) {
+                pC.moveTo(pC.room.memory.lockSpots.pwrCreep[pC.name].x, pC.room.memory.lockSpots.pwrCreep[pC.name].y, { reusePath: 10, ignoreRoads: true, swampCost: 1 });
+                continue;
+               }
+               
            }
-          
+
+            if (Game.time % 10 === 0 || pC.carry['energy'] > 0) {
+
+                if (pC.carry['energy'] > 0) pC.transfer(pC.room.storage, RESOURCE_ENERGY);
+
+                if (pC.carry['energy'] === 0) {
+
+                    const tc = pC.pos.findInRange(FIND_STRUCTURES, 1, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] === 2000 });
+
+                    if (tc[0]) pC.withdraw(tc[0], RESOURCE_ENERGY);
+
+                }
+
+            }
+            
         }
         continue;
     }
@@ -4117,264 +4055,10 @@ const getEnergyStatus = function (spawn) {
 
 
 
+const warpingUnits = function (spawn, tier, name, memory) {
 
+    spawn.spawnCreep(createBody(unitBuilds[memory.memory.role][tier]), name, memory);
 
-
-
-// warp in Worker (Stage 1 Miner / Builder / Repairs)
-const warpWorker = function (spawn, tier, name, memory) {
-
-   /*  const bpc = ["w2c2m","w2c2m","2w2c2m","3w3c3m","4w4c4m","5w5c5m","9w9c9m","12w12c12m","16w17c17m"];
-
-    spawn.spawnCreep(createBody(bpc[tier]), name, memory); */
-
-    switch (tier) {
-        case 8: // 3300e -- the ultimate worker
-            spawn.spawnCreep(createBody("16w17c17m"), name, memory);
-            break;
-
-        case 7: // 2400e
-            spawn.spawnCreep(createBody("12w12c12m"), name, memory);
-            break;
-
-        case 6: // 1800e
-            spawn.spawnCreep(createBody("9w9c9m"), name, memory);
-            break;
-
-        case 5: // 1000e
-            spawn.spawnCreep(createBody("5w5c5m"), name, memory);
-            break;
-
-        case 4: // 800e
-            spawn.spawnCreep(createBody("4w4c4m"), name, memory);
-            break;
-
-        case 3: // 600e
-            spawn.spawnCreep(createBody("3w3c3m"), name, memory);
-            break;
-
-        case 2: // 400e
-            spawn.spawnCreep(createBody("2w2c2m"), name, memory);
-            break;
-
-        case 1: // 300e
-            spawn.spawnCreep(createBody("w2c2m"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-
-// warp in Probe (Miner)
-const warpProbe = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 4: // 650e
-            spawn.spawnCreep(createBody("5w3m"), name, memory);
-            break;
-
-        case 3: // 600e
-            spawn.spawnCreep(createBody("5w2m"), name, memory);
-            break;
-
-        case 2: // 400e
-            spawn.spawnCreep(createBody("3w2m"), name, memory);
-            break;
-
-        case 1: // 300e
-            spawn.spawnCreep(createBody("2w2m"), name, memory);
-            break;
-
-        default: // 650e
-            spawn.spawnCreep(createBody("5w3m"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-
-
-// warp in Assimilator (Hauler)
-const warpAssim = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 2500e -- the ultimate Assimilator
-            spawn.spawnCreep(createBody("33c17m"), name, memory);
-            break;
-
-        case 7: // 1800e
-            spawn.spawnCreep(createBody("24c12m"), name, memory);
-            break;
-
-        case 6: // 1800e
-            spawn.spawnCreep(createBody("18c9m"), name, memory);
-            break;
-
-        case 5: // 750e
-            spawn.spawnCreep(createBody("10c5m"), name, memory);
-            break;
-
-        case 4: // 600e
-            spawn.spawnCreep(createBody("8c4m"), name, memory);
-            break;
-
-        case 3: // 450e
-            spawn.spawnCreep(createBody("6c3m"), name, memory);
-            break;
-
-        default: // 300e
-            spawn.spawnCreep(createBody("4c2m"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-
-
-// warp in Archon(Upgrader)    
-const warpArchon = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 4100e -- the ultimate upgrader
-            spawn.spawnCreep(createBody("15w10c8m"), name, memory);
-            break;
-
-        case 7: // 2400e
-            spawn.spawnCreep(createBody("16w12c4m"), name, memory);
-            break;
-
-        case 6: // 1900e
-            spawn.spawnCreep(createBody("12w8c6m"), name, memory);
-            break;
-
-        case 5: // 1200e
-            spawn.spawnCreep(createBody("8w4c4m"), name, memory);
-            break;
-
-        case 4: // 800e
-            spawn.spawnCreep(createBody("4w4c4m"), name, memory);
-            break;
-
-        case 3: // 600e
-            spawn.spawnCreep(createBody("3w3c3m"), name, memory);
-            break;
-
-        case 2: // 400e
-            spawn.spawnCreep(createBody("2w2c2m"), name, memory);
-            break;
-
-        case 1: // 300e
-            spawn.spawnCreep(createBody("w2c2m"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-// warp in Archon(Upgrader)    
-const warpExtractor = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 4100e -- the ultimate extractor
-            spawn.spawnCreep(createBody("32w10c8m"), name, memory);
-            break;
-
-        case 7: // 2400e
-            spawn.spawnCreep(createBody("16w12c4m"), name, memory);
-            break;
-
-        case 6: // 1900e
-            spawn.spawnCreep(createBody("12w8c6m"), name, memory);
-            break;
-
-        default: // 1200e
-            spawn.spawnCreep(createBody("8w4c4m"), name, memory);
-            break;
-       
-    }
-};
-
-
-
-
-
-
-
-// warp in Claimer    
-const warpClaimer = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 3250e -- the ultimate upgrader
-            spawn.spawnCreep(createBody("5x5m"), name, memory);
-            break;
-
-        case 7: // 2600e
-            spawn.spawnCreep(createBody("4x4m"), name, memory);
-            break;
-
-        case 6: // 1950e
-            spawn.spawnCreep(createBody("3x3m"), name, memory);
-            break;
-
-        default: // 1300e
-            spawn.spawnCreep(createBody("2x2m"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-
-// warp in Zealot (Melee Warrior)
-const warpZealot = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 3760e -- the ultimate damage
-            spawn.spawnCreep(createBody("1t17m30a2h"), name, memory);
-            break;
-
-        case 7: // 2890e
-            spawn.spawnCreep(createBody("10t25m13a2h"), name, memory);
-            break;
-
-        case 6: // 2040e
-            spawn.spawnCreep(createBody("8t20m12a"), name, memory);
-            break;
-
-        case 5: // 950e
-            spawn.spawnCreep(createBody("5t10m5a"), name, memory);
-            break;
-
-        case 4: // 780e
-            spawn.spawnCreep(createBody("6m6a"), name, memory);
-            break;
-
-        case 3: // 520e
-            spawn.spawnCreep(createBody("4m4a"), name, memory);
-            break;
-
-        default: // 410e
-            spawn.spawnCreep(createBody("4m3a"), name, memory);
-            break;
-    }
 };
 
 
@@ -4386,108 +4070,10 @@ const warpZealot = function (spawn, tier, name, memory) {
 
 
 
-// warp in Stalker (Range Warrior)
-const warpStalker = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 5000e -- the ultimate damage
-            spawn.spawnCreep(createBody("25m25r"), name, memory);
-            break;
-
-        case 7: // 4000e
-            spawn.spawnCreep(createBody("20m20r"), name, memory);
-            break;
-
-        case 6: // 2400e
-            spawn.spawnCreep(createBody("12m12r"), name, memory);
-            break;
-
-        default: // 800e
-            spawn.spawnCreep(createBody("4m4r"), name, memory);
-            break;
-    }
-};
 
 
-
-
-
-
-
-
-
-// warp in Zealot (Melee Warrior)
-const warpSmallZealot = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 3760e -- melee fodder class
-            spawn.spawnCreep(createBody("1t2h30a17m"), name, memory);
-            break;
-
-        case 7: // 2890e
-            spawn.spawnCreep(createBody("10t13a25m2h"), name, memory);
-            break;
-
-        case 6: // 2020e
-            spawn.spawnCreep(createBody("12t22m8w"), name, memory);
-            break;
-
-        case 5: // 1020e
-            spawn.spawnCreep(createBody("12t14m2w"), name, memory);
-            break;
-
-        case 4: // 780e
-            spawn.spawnCreep(createBody("13t13m"), name, memory);
-            break;
-
-        default: // 600e
-            spawn.spawnCreep(createBody("10t10m"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-
-
-// warp in Templar (Healer)
-const warpTemplar = function (spawn, tier, name, memory) {
-
-    switch (tier) {
-        case 8: // 7500e -- the ultimate Healer
-            spawn.spawnCreep(createBody("25m25h"), name, memory);
-            break;
-
-        case 7: // 2400e
-            spawn.spawnCreep(createBody("8m8h"), name, memory);
-            break;
-
-        case 6: // 1800e
-            spawn.spawnCreep(createBody("6m6h"), name, memory);
-            break;
-
-        case 5: // 650e
-            spawn.spawnCreep(createBody("3m2h"), name, memory);
-            break;
-
-        default: // 600e
-            spawn.spawnCreep(createBody("2m2h"), name, memory);
-            break;
-    }
-};
-
-
-
-
-
-
-
-
-                        ///  All logic found in warpNexus/createBody - credit to Orlet - Most especially this array below
-                    /*             
+                                ///  All logic found in warpNexus/createBody - credit to Orlet - Most especially this array below
+                        /*             
                         * Unpack a bodypart string into creep body part array
                         *
                         * -- Modded -- createCreepBodyArray now -> createBody
@@ -4510,14 +4096,13 @@ const warpTemplar = function (spawn, tier, name, memory) {
 
 const createBody = function (bodyString) {
 
-    let bodyObject;
     let partCounter;
     let i;
     let j;
     let part;
 
     // body object LUT
-    bodyObject =
+    const bodyObject =
         {
 
             m: MOVE,
@@ -4572,6 +4157,18 @@ const createBody = function (bodyString) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /*                                        _   _                              ___           _                  _          
 *                                        ( ) ( )                            (  _`\        (_ )               ( )_        
 *                                 ______ | `\| |   _ _   ___ ___     __     | (_(_)   __   | |    __     ___ | ,_)______ 
@@ -4580,9 +4177,6 @@ const createBody = function (bodyString) {
 *                                        (_) (_)`\__,_)(_) (_) (_)`\____)   `\____)`\____)(___)`\____)`\____)`\__)       
 */
 const getName = function () {
-
-    const names1 = ["Tassadar", "Aiden", "Liam", "Fenix", "Aldaris", "Taldarin", "Jayden", "Karax", "Urun", "Adun", "Caden", "Kaldalis", "Karass", "Zeratul", "Caleb", "Mohandar", "Mojo", "Elijah", "Ulrezaj", "Alarak", "Ma Lash", "Nyon", "Felanis", "Talandar", "Clolarion", "Kizrath", "Aedus", "Heiberg", "Mertick", "Minos", "Dabiri", "Danimoth", "Demioch", "Pagan", "Edullon", "Eredas", "Gantrithor", "Eli", "Zyrkhan", "Animeth", "Hych", "Kan", "Axxath", "Tutus", "Ertyr", "Xioldol", "Dhamas", "Ful", "Aldinyn", "Gor", "Zith", "Xox", "Igith", "Aldazres", "Kyr", "Khurkus", "Ghitath", "Khar", "Ghel", "Ogren", "Kixxath", "Xiodeth", "Erazrech", "Onugrus", "Diath", "Zyth", "Diadal", "Tigin", "Dildrath", "Agdanath", "Indiotuch", "Dhox", "Khech", "Ganos", "Zaldel", "Ildros", "Xal Dan", "Zemos", "Kydos", "Oger", "Xavier", "Umymul", "Khyl", "Gyrkas", "Kumor", "Xeroch", "Aminoth", "Amedryx", "Irotoch", "Denor", "Dhiamys", "Edech", "Declan", "Kedoxus", "Anydalis", "Endazris", "Collues", "Mateo", "Micah", "Ellios", "Char Les", "Cay Ce", "Lex Ri", "Var Oli"];
-    const names2 = ["Rohana", "Selendis", "Raszagal", "Talis", "Vorazun", "Ava", "Ji nara", "Eri", "Meri", "Kyrea", "Lasarra", "Hyreh", "Adonzi", "Ghyzsa", "Ziaryth", "Tiria", "Golla", "Ella", "Teszu", "Syno", "Aaliyah", "Fulno", "Hetun", "Zilgo", "Yrsygy", "Anea", "Aria", "Sasrin", "Kydus", "Lila", "Erede", "Adalyn", "Azroszu", "Erura", "Eta", "Tyte", "Gosryn", "Indaras", "Arindrel", "Ellygi", "Erille", "Nilzi", "Ealgoth", "Norae", "Mila", "Ryllial", "Healdath", "Ianygu", "Idada", "Idunzu", "Maya", "Mygi", "Yndy", "Zynol", "Elena", "Ruto", "Aru", "Hedy", "Itigath", "Ynzoty", "Alaina", "Otenzu", "Yzsello", "Oldryh", "Urza", "Geru", "Keirae", "Erundu", "Re Gan", "Mollae", "Nindrah", "Azso", "Nyguh", "Enzosrean", "Odidyh", "Arsyte", "Evae", "Akice", "Elianae", "Fadyl", "Dhuni", "Ghoxi", "Gondyn", "Tille", "Kaelyn", "Zeszyl", "Yta", "Fiatia", "Aldelzae", "Tyda", "Tozsa", "Adialli", "Sodae", "Kigu", "Kygo", "Viviae", "Jul Ana", "Gianna", "Sky Ter", "Jor Dyn", "Bezeal", "Rae Gin", "Searithe", "Leyora"];
 
     let name;
     let isNameTaken;
@@ -4612,373 +4206,18 @@ const getName = function () {
 
 
 
-/*                         e88   e88   e88   888 88e                                     dP"8 888     ,e,         888      888         88e   88e   88e   
-*                         d888  d888  d888   888 888D  e88 88e   e88 88e  888 888 8e    C8b Y 888 ee   "   ,e e,  888  e88 888  dP"Y   888b  888b  888b  
-*                        e8888 e8888 e8888   888 88"  d888 888b d888 888b 888 888 88b    Y8b  888 88b 888 d88 88b 888 d888 888 C88b    8888e 8888e 8888e 
-*                        88888 88888 88888   888 b,   Y888 888P Y888 888P 888 888 888   b Y8D 888 888 888 888   , 888 Y888 888  Y88D   88888 88888 88888 
-*                        "8888 "8888 "8888   888 88b,  "88 88"   "88 88"  888 888 888   8edP  888 888 888  "YeeP" 888  "88 888 d,dP    8888" 8888" 8888" 
-*                         Y888  Y888  Y888                                                                                             888P  888P  888P  
-*                          "88   "88   "88                                                                                             88"   88"   88"   
+
+
+
+
+
+/* 
+*
+*
+///////////////        WORK in Progress   *******   Flag controlled road creation by pathing ********           \\\\\\\\\\\\\
+*
+*
 */
-const roomShields = function (f) {
-   
-    const initCheck = _.filter(Game.structures, s => s.room.name === f.pos.roomName && s.structureType === 'rampart' && s.hits < s.room.memory.repairs);
-    if (initCheck[0] !== undefined) return;
-
-    ///  RCL-3 Shield Around Base ///
-    if (f.room.controller.level >= 3) {
-        f.room.createConstructionSite(f.pos.x - 1, f.pos.y, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x - 1, f.pos.y + 1, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x, f.pos.y + 1, STRUCTURE_RAMPART);
-        if (f.room.memory.baseBuilder.timers.ramsTimer + 2500 < Game.time) {
-            f.room.createConstructionSite(f.pos.x + 1, f.pos.y + 1, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 2, f.pos.y + 1, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 3, f.pos.y + 1, STRUCTURE_RAMPART);
-            if (f.room.memory.baseBuilder.timers.ramsTimer + 5000 < Game.time) {
-                f.room.createConstructionSite(f.pos.x + 4, f.pos.y + 1, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 5, f.pos.y + 1, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 6, f.pos.y + 1, STRUCTURE_RAMPART);
-                if (f.room.memory.baseBuilder.timers.ramsTimer + 7500 < Game.time) {
-                    f.room.createConstructionSite(f.pos.x + 7, f.pos.y + 1, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 8, f.pos.y + 1, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 9, f.pos.y + 1, STRUCTURE_RAMPART);
-                    if (f.room.memory.baseBuilder.timers.ramsTimer + 10000 < Game.time) {
-                        f.room.createConstructionSite(f.pos.x + 10, f.pos.y + 1, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 10, f.pos.y + 1, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 10, f.pos.y, STRUCTURE_RAMPART);
-                        if (f.room.memory.baseBuilder.timers.ramsTimer + 12500 < Game.time) {
-                            f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 1, STRUCTURE_RAMPART);
-                            f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 2, STRUCTURE_RAMPART);
-                            f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 3, STRUCTURE_RAMPART);
-                            if (f.room.memory.baseBuilder.timers.ramsTimer + 15000 < Game.time) {
-                                f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 4, STRUCTURE_RAMPART);
-                                f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 5, STRUCTURE_RAMPART);
-                                f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 6, STRUCTURE_RAMPART);
-                                if (f.room.memory.baseBuilder.timers.ramsTimer + 17500 < Game.time) {
-                                    f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 7, STRUCTURE_RAMPART);
-                                    f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 8, STRUCTURE_RAMPART);
-                                    f.room.createConstructionSite(f.pos.x + 10, f.pos.y - 9, STRUCTURE_RAMPART);
-                                    if (f.room.memory.baseBuilder.timers.ramsTimer + 20000 < Game.time) {
-                                        f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 9, STRUCTURE_RAMPART);
-                                        f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 9, STRUCTURE_RAMPART);
-                                        f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 9, STRUCTURE_RAMPART);
-                                        if (f.room.memory.baseBuilder.timers.ramsTimer + 22500 < Game.time) {
-                                            f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 9, STRUCTURE_RAMPART);
-                                            f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 9, STRUCTURE_RAMPART);
-                                            f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 9, STRUCTURE_RAMPART);
-                                            if (f.room.memory.baseBuilder.timers.ramsTimer + 25000 < Game.time) {
-                                                f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 9, STRUCTURE_RAMPART);
-                                                f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 9, STRUCTURE_RAMPART);
-                                                f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 9, STRUCTURE_RAMPART);
-                                                if (f.room.memory.baseBuilder.timers.ramsTimer + 27500 < Game.time) {
-                                                    f.room.createConstructionSite(f.pos.x, f.pos.y - 9, STRUCTURE_RAMPART);
-                                                    f.room.createConstructionSite(f.pos.x, f.pos.y - 8, STRUCTURE_RAMPART);
-                                                    f.room.createConstructionSite(f.pos.x, f.pos.y - 7, STRUCTURE_RAMPART);
-                                                    if (f.room.memory.baseBuilder.timers.ramsTimer + 30000 < Game.time) {
-                                                        f.room.createConstructionSite(f.pos.x, f.pos.y - 6, STRUCTURE_RAMPART);
-                                                        f.room.createConstructionSite(f.pos.x, f.pos.y - 5, STRUCTURE_RAMPART);
-                                                        f.room.createConstructionSite(f.pos.x, f.pos.y - 4, STRUCTURE_RAMPART);
-                                                        if (f.room.memory.baseBuilder.timers.ramsTimer + 32500 < Game.time) {
-                                                            f.room.createConstructionSite(f.pos.x, f.pos.y - 3, STRUCTURE_RAMPART);
-                                                            f.room.createConstructionSite(f.pos.x, f.pos.y - 2, STRUCTURE_RAMPART);
-                                                            f.room.createConstructionSite(f.pos.x, f.pos.y - 1, STRUCTURE_RAMPART);
-                                                            if (f.room.memory.baseBuilder.timers.ramsTimer + 35000 < Game.time) {
-                                                                f.room.createConstructionSite(f.pos.x, f.pos.y, STRUCTURE_RAMPART);
-                                                                f.room.createConstructionSite(f.pos.x - 1, f.pos.y - 5, STRUCTURE_RAMPART);
-                                                                f.room.createConstructionSite(f.pos.x - 1, f.pos.y - 4, STRUCTURE_RAMPART);
-                                                                if (f.room.memory.baseBuilder.timers.ramsTimer + 37500 < Game.time) {
-                                                                    f.room.createConstructionSite(f.pos.x - 1, f.pos.y - 3, STRUCTURE_RAMPART);
-                                                                    f.room.createConstructionSite(f.pos.x - 1, f.pos.y - 2, STRUCTURE_RAMPART);
-                                                                    f.room.createConstructionSite(f.pos.x - 1, f.pos.y - 1, STRUCTURE_RAMPART);
-                                                                    f.room.memory.baseBuilder.timers.ramsTimer = Game.time + 3500;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /////// RCL-5 //////
-    if (f.room.controller.level >= 5) {
-        f.room.createConstructionSite(f.pos.x + 1, f.pos.y, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 2, f.pos.y, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 3, f.pos.y, STRUCTURE_RAMPART);
-        if (f.room.memory.baseBuilder.timers.ramsTimer + 2500 < Game.time) {
-            f.room.createConstructionSite(f.pos.x + 4, f.pos.y, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 5, f.pos.y, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 6, f.pos.y, STRUCTURE_RAMPART);
-            if (f.room.memory.baseBuilder.timers.ramsTimer + 5000 < Game.time) {
-                f.room.createConstructionSite(f.pos.x + 7, f.pos.y, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 8, f.pos.y, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 9, f.pos.y, STRUCTURE_RAMPART);
-                if (f.room.memory.baseBuilder.timers.ramsTimer + 7500 < Game.time) {
-                    f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 1, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 2, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 3, STRUCTURE_RAMPART);
-                    if (f.room.memory.baseBuilder.timers.ramsTimer + 10000 < Game.time) {
-                        f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 4, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 5, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 6, STRUCTURE_RAMPART);
-                        if (f.room.memory.baseBuilder.timers.ramsTimer + 12500 < Game.time) {
-                            f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 7, STRUCTURE_RAMPART);
-                            f.room.createConstructionSite(f.pos.x + 9, f.pos.y - 8, STRUCTURE_RAMPART);
-                            f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 8, STRUCTURE_RAMPART);
-                            if (f.room.memory.baseBuilder.timers.ramsTimer + 15000 < Game.time) {
-                                f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 8, STRUCTURE_RAMPART);
-                                f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 8, STRUCTURE_RAMPART);
-                                f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 8, STRUCTURE_RAMPART);
-                                if (f.room.memory.baseBuilder.timers.ramsTimer + 17500 < Game.time) {
-                                    f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 8, STRUCTURE_RAMPART);
-                                    f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 8, STRUCTURE_RAMPART);
-                                    f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 8, STRUCTURE_RAMPART);
-                                    if (f.room.memory.baseBuilder.timers.ramsTimer + 20000 < Game.time) {
-                                        f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 8, STRUCTURE_RAMPART);
-                                        f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 7, STRUCTURE_RAMPART);
-                                        f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 6, STRUCTURE_RAMPART);
-                                        if (f.room.memory.baseBuilder.timers.ramsTimer + 22500 < Game.time) {
-                                            f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 5, STRUCTURE_RAMPART);
-                                            f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 4, STRUCTURE_RAMPART);
-                                            f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 3, STRUCTURE_RAMPART);
-                                            if (f.room.memory.baseBuilder.timers.ramsTimer + 27500 < Game.time) {
-                                                f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 2, STRUCTURE_RAMPART);
-                                                f.room.createConstructionSite(f.pos.x + 1, f.pos.y - 1, STRUCTURE_RAMPART);
-                                                f.room.memory.baseBuilder.timers.ramsTimer = Game.time + 3500;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /////// RCL-6 ///////
-    if (f.room.controller.level >= 6) {
-        f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 1, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 1, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 1, STRUCTURE_RAMPART);
-        if (f.room.memory.baseBuilder.timers.ramsTimer + 2500 < Game.time) {
-            f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 1, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 1, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 1, STRUCTURE_RAMPART);
-            if (f.room.memory.baseBuilder.timers.ramsTimer + 5000 < Game.time) {
-                f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 1, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 2, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 3, STRUCTURE_RAMPART);
-                if (f.room.memory.baseBuilder.timers.ramsTimer + 7500 < Game.time) {
-                    f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 4, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 5, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 6, STRUCTURE_RAMPART);
-                    if (f.room.memory.baseBuilder.timers.ramsTimer + 10000 < Game.time) {
-                        f.room.createConstructionSite(f.pos.x + 8, f.pos.y - 7, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 7, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 7, STRUCTURE_RAMPART);
-                        if (f.room.memory.baseBuilder.timers.ramsTimer + 12500 < Game.time) {
-                            f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 7, STRUCTURE_RAMPART);
-                            f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 7, STRUCTURE_RAMPART);
-                            f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 7, STRUCTURE_RAMPART);
-                            if (f.room.memory.baseBuilder.timers.ramsTimer + 15000 < Game.time) {
-                                f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 7, STRUCTURE_RAMPART);
-                                f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 6, STRUCTURE_RAMPART);
-                                f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 5, STRUCTURE_RAMPART);
-                                if (f.room.memory.baseBuilder.timers.ramsTimer + 17500 < Game.time) {
-                                    f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 4, STRUCTURE_RAMPART);
-                                    f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 3, STRUCTURE_RAMPART);
-                                    f.room.createConstructionSite(f.pos.x + 2, f.pos.y - 2, STRUCTURE_RAMPART);
-                                    f.room.memory.baseBuilder.timers.ramsTimer = Game.time + 3500;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /////// RCL-7 ///////
-    if (f.room.controller.level >= 7) {
-        f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 2, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 2, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 2, STRUCTURE_RAMPART);
-        if (f.room.memory.baseBuilder.timers.ramsTimer + 2500 < Game.time) {
-            f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 2, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 2, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 3, STRUCTURE_RAMPART);
-            if (f.room.memory.baseBuilder.timers.ramsTimer + 5000 < Game.time) {
-                f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 4, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 5, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 7, f.pos.y - 6, STRUCTURE_RAMPART);
-                if (f.room.memory.baseBuilder.timers.ramsTimer + 7500 < Game.time) {
-                    f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 6, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 6, STRUCTURE_RAMPART);
-                    f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 6, STRUCTURE_RAMPART);
-                    if (f.room.memory.baseBuilder.timers.ramsTimer + 10000 < Game.time) {
-                        f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 6, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 5, STRUCTURE_RAMPART);
-                        f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 4, STRUCTURE_RAMPART);
-                        if (f.room.memory.baseBuilder.timers.ramsTimer + 12500 < Game.time) {
-                            f.room.createConstructionSite(f.pos.x + 3, f.pos.y - 3, STRUCTURE_RAMPART);
-                            f.room.memory.baseBuilder.timers.ramsTimer = Game.time + 3500;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    //////// RCL-8 Final Shields ///////
-    if (f.room.controller.level === 8) {
-        f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 3, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 3, STRUCTURE_RAMPART);
-        f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 3, STRUCTURE_RAMPART);
-        if (f.room.memory.baseBuilder.timers.ramsTimer + 2500 < Game.time) {
-            f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 4, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 6, f.pos.y - 5, STRUCTURE_RAMPART);
-            f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 5, STRUCTURE_RAMPART);
-            if (f.room.memory.baseBuilder.timers.ramsTimer + 5000 < Game.time) {
-                f.room.createConstructionSite(f.pos.x + 4, f.pos.y - 4, STRUCTURE_RAMPART);
-                f.room.createConstructionSite(f.pos.x + 5, f.pos.y - 4, STRUCTURE_RAMPART);
-                f.room.memory.baseBuilder.timers.ramsTimer = Game.time + 3500;
-            }
-        }
-    }
-
-};
-
-
-
-
-
-
-
-
-const roomLinks = function (f) {
-
-    if (f.room.memory.baseBuilder.links.cLink !== 1) {
-        const cLink = f.room.controller.pos.findInRange(FIND_STRUCTURES, 1, { filter: { structureType: STRUCTURE_LINK } });
-        if (cLink[0] === undefined) {
-            let path = f.room.findPath(f.pos, f.room.controller.pos, { maxOps: 1200, ignoreCreeps: true, range: 1 });
-            let i = 0;
-            let d = 0;
-            console.log('Testing cLink Pather xyz: ' + path.length, '  X: ' + path[0].x, '  Y: ' + path[0].y)
-            if(f.room.memory.baseBuilder.links === undefined) f.room.memory.baseBuilder.links = {};
-            if(f.room.createConstructionSite(path[path.length - 1].x, path[path.length - 1].y, STRUCTURE_LINK) === OK) f.room.memory.baseBuilder.links.cLink = 1;
-            while (i < path.length - 1) {
-                d++;
-                f.room.createConstructionSite(path[path.length - d].x, path[path.length - d].y, STRUCTURE_ROAD);
-                i++;
-            }
-            
-        }
-    }
-
-    if (f.room.memory.baseBuilder.links.aLink !== 1) {
-        const closerSource = f.pos.findClosestByRange(FIND_SOURCES);
-        const uSource = f.room.find(FIND_SOURCES);
-        const source1 = _.reject(uSource, { id: closerSource.id })[0];
-        const aLink = source1.pos.findInRange(FIND_STRUCTURES, 1, { filter: { structureType: STRUCTURE_LINK } });
-        if (aLink[0] === undefined) {
-            let path = f.room.findPath(f.pos, source1.pos, { maxOps: 600, ignoreCreeps: true, range: 2 });
-            let i = 0;
-            let d = 0;
-            let x = 0;
-            let lx = path[path.length - 1].x;
-            let ly = path[path.length - 1].y;
-            //console.log('Testing aLink Pather xyz: ' + path.length, '  X: ' + path[0].x, '  Y: ' + path[0].y)
-
-            while (x < 21) {
-                const found = f.room.lookForAt(LOOK_STRUCTURES, lx, ly);
-                if (found[0] === undefined) {
-                    if(f.room.createConstructionSite(lx,ly, STRUCTURE_LINK) === OK) f.room.memory.baseBuilder.links.aLink = 1;
-                    x = 21;
-                }
-
-                let n = Math.random() < 0.5 ? (Math.random() < 0.5 ? -1 : 1): 0;
-                let p = Math.random() < 0.5 ? (Math.random() < 0.5 ? -1 : 1): 0;
-                lx = path[path.length - 1].x + n;
-                ly = path[path.length - 1].y + p;
-                x++
-                
-            }
-
-            while (i < path.length - 1) {
-                d++;
-                f.room.createConstructionSite(path[path.length - d].x, path[path.length - d].y, STRUCTURE_ROAD);
-                i++;
-            }
-        }
-    }
-    f.room.memory.timers.gtCycle = 0;
-};
-
-
-
-
-
-
-
-
-const roomContainers = function (f) {
-
-    if (f.room.memory === undefined) return;
-
-        const source1 = f.pos.findClosestByRange(FIND_SOURCES);
-        const scA = source1.pos.findInRange(FIND_STRUCTURES, 1, { filter: { structureType: STRUCTURE_CONTAINER } });
-        if (scA[0] === undefined) {
-            let path = f.room.findPath(f.pos, source1.pos, { maxOps: 600, ignoreCreeps: true, range: 1 });
-            let i = 0;
-            let d = 0;
-            if(f.room.memory.baseBuilder.containers === undefined) f.room.memory.baseBuilder.containers = {};
-            if(f.room.createConstructionSite(path[path.length - 1].x, path[path.length - 1].y, STRUCTURE_CONTAINER) === OK) f.room.memory.baseBuilder.containers.scA = 1;
-            while (i < path.length - 1) {
-                d++;
-                f.room.createConstructionSite(path[path.length - d].x, path[path.length - d].y, STRUCTURE_ROAD);
-                i++;
-            }  
-        }
-
-        if (f.room.memory.src2Id !== undefined) {
-            const uSource = f.room.find(FIND_SOURCES);
-            const source2 = _.reject(uSource, { id: source1.id })[0];     
-            const scB = source2.pos.findInRange(FIND_STRUCTURES, 1, { filter: { structureType: STRUCTURE_CONTAINER } });
-            //console.log('Testing Container Source check:  ' +uSource, '  '+source2, '  '+ scB[0]+scB+source1)
-            if (scB[0] === undefined) {
-                let path = f.room.findPath(f.pos, source2.pos, { maxOps: 600, ignoreCreeps: true, range: 1 });
-                let i = 0;
-                let d = 0;
-                if(f.room.createConstructionSite(path[path.length - 1].x, path[path.length - 1].y, STRUCTURE_CONTAINER) === OK) f.room.memory.baseBuilder.containers.scB = 1;
-                while (i < path.length - 1) {
-                    d++;
-                    f.room.createConstructionSite(path[path.length - d].x, path[path.length - d].y, STRUCTURE_ROAD);
-                    i++;
-                }
-            }
-        }
-    f.room.memory.timers.gtCycle = 0;
-};
-
-
-
-
-
-
-
-
-
 const roomRoads = function (f) {
 
     if (f.room.memory === undefined) return;
@@ -4993,6 +4232,7 @@ const roomRoads = function (f) {
     f.room.memory.timers.gtCycle = 0;
     roadEnd.remove();
     f.remove();
+
 };
 
 
@@ -5001,182 +4241,6 @@ const roomRoads = function (f) {
 
 
 
-
-
-const roomPlans = function () {
-
-    for (const name in Game.flags) {
-
-        if (Game.flags[name].name.slice(0, 6) === 'Build-') {
-
-            switch (Game.flags[name].room.controller.level) {
-
-                case 8:
-                    if (Game.time < Game.flags[name].room.memory.baseBuilder.timers.buildTimer && Game.flags[name].room.memory.baseBuilder.timers.buildTimer !== undefined) continue;
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 1, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y + 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y + 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y + 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y + 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 4, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 2, STRUCTURE_TOWER);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 4, STRUCTURE_TOWER);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 5, STRUCTURE_TOWER);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 3, STRUCTURE_POWER_SPAWN);                   
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 4, STRUCTURE_SPAWN);
-                    if (Game.flags[name].room.controller.progress > 25000) {
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 2, STRUCTURE_NUKER);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 1, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y + 1, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y + 1, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y + 1, STRUCTURE_OBSERVER);
-                    }
-                    Game.flags[name].room.memory.baseBuilder.timers.buildTimer = Game.time + 200;
-
-                case 7:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 3, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 5, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x - 1, Game.flags[name].pos.y - 2, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x - 1, Game.flags[name].pos.y - 4, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 4, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 3, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 4, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 5, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 5, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 4, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 3, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 3, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 2, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 2, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 1, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 3, STRUCTURE_TOWER);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 2, STRUCTURE_SPAWN);
-                    if (Game.flags[name].room.controller.progress > 25000) {
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y + 1, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y + 1, STRUCTURE_LAB);
-                    }
-
-                case 6:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 3, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 2, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 3, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 4, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 1, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 5, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 4, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 3, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 2, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 2, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 1, STRUCTURE_EXTENSION);
-                    if (Game.flags[name].room.controller.progress > 50000) {
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y + 1, STRUCTURE_LAB);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 1, STRUCTURE_LAB);
-                    }
-                    if (Game.flags[name].room.controller.progress > 25000) {
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 1, STRUCTURE_TERMINAL);
-                    }
-
-                case 5:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 8, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 7, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 6, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 5, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 7, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 8, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 9, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 10, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 5, STRUCTURE_TOWER);
-                    if (Game.flags[name].room.memory.baseBuilder.links.aLink !== 1 || Game.flags[name].room.memory.baseBuilder.links.cLink !== 1) roomLinks(Game.flags[name]);
-                    
-
-                case 4:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 6, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    if (Game.flags[name].room.controller.progress > 10000) {
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 3, STRUCTURE_STORAGE);
-                    }
-
-                case 3:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 7, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 8, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 4, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 5, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 5, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 6, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 4, STRUCTURE_TOWER);
-                    /////////// Raise Ramparts ////////////
-                    if (Game.flags[name].room.memory.baseBuilder.timers.ramsTimer === undefined) Game.flags[name].room.memory.baseBuilder.timers.ramsTimer = Game.time + 5500;
-                    if(Game.time % 2 === 0) {
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].room.memory.containers.s1ContA.goX, Game.flags[name].room.memory.containers.s1ContA.goY, STRUCTURE_RAMPART);
-                        Game.flags[name].room.createConstructionSite(Game.flags[name].room.memory.containers.s2ContB.goX, Game.flags[name].room.memory.containers.s2ContB.goY, STRUCTURE_RAMPART);
-                        if (Game.flags[name].room.controller.progress > 5000) {
-                            if(Game.flags[name].room.memory.baseBuilder.timers.ramsTimer < Game.time) roomShields(Game.flags[name]);
-                        }
-                    }
-                   
-                case 2:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 8, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 7, STRUCTURE_EXTENSION);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 9, STRUCTURE_EXTENSION);
-                    /////////// Build Containers ////////////
-                    if(Game.flags[name].room.controller.progress > 44900){
-                        if(Game.flags[name].room.memory.baseBuilder.containers.scA !== 1 || Game.flags[name].room.memory.baseBuilder.containers.scB !== 1) roomContainers(Game.flags[name]);
-                    }
-
-                case 1:
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y + 1, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x - 1, Game.flags[name].pos.y, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x, Game.flags[name].pos.y - 1, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 1, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 2, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 3, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 5, Game.flags[name].pos.y - 4, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 4, Game.flags[name].pos.y - 5, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 3, Game.flags[name].pos.y - 6, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 2, Game.flags[name].pos.y - 7, STRUCTURE_ROAD);
-                    Game.flags[name].room.createConstructionSite(Game.flags[name].pos.x + 1, Game.flags[name].pos.y - 8, STRUCTURE_ROAD);
-                    break;
-            }
-        }
-
-    }
-};
 
 
 
@@ -5227,19 +4291,16 @@ const cSpeak = function (code) {
 
 
 
-
-module.exports.loop = function () {
-'use strict'
 /*                                                        _                             _         
 *                                                 __  __ |   |\/| _ . _   |   _  _  _    | __  __ 
 *                                                     -- |_  |  |(_||| )  |__(_)(_)|_)  _| --     
 *                                                                                  |              
 */
+module.exports.loop = function () {
+'use strict'
+    
     if (Memory.throttle) {
-
-        if (Game.cpu.bucket === 10000) {
-            Memory.throttle = false;
-        }
+        if (Game.cpu.bucket === 10000) Memory.throttle = false;
         return;        
     }
 
@@ -5248,29 +4309,32 @@ module.exports.loop = function () {
         return;
     }
 
-
     for (const name in Memory.creeps) {
-        if (!Game.creeps[name]) {
-            delete Memory.creeps[name];
-        }
-    };
-    for (const name in Memory.flags) {
-        if (!Game.flags[name]) {
-            delete Memory.flags[name];
-        }
-    };
+        if (!Game.creeps[name]) delete Memory.creeps[name];
+    }
 
-/*                            _                                           __                  __                    __            _         
-*                     __  __ |   |  | _  _ _   |\/| _  _  _  _  _ _   /  |__)|_  _ |_ _  _   /   _  _  _  _  _  _  /   _ || _ _|   | __  __ 
-*                         -- |_  |/\|(_|| |_)  |  |(_|| )(_|(_)(-|   /   |   | )(_)|_(_)| )  \__(_|| )| )(_)| )_)  \__(_|||(-(_|  _| --     
-*                                         |                 _/                                                                              
-*/
+    for (const name in Memory.flags) {
+        if (!Game.flags[name]) delete Memory.flags[name];  
+    }
+
+    if (!Memory.memoryCheck) {
+
+        Memory.utils = {};
+        Memory.memoryCheck = true;
+        Memory.utils.terminals = {};
+        Memory.utils.terminals.roomLowEnergy = {};
+        Memory.utils.terminals.roomHighEnergy = {};
+        Memory.utils.squads = {};
+
+    }
+
     roles();
     pwrCreeps();
     roomLoops();
     warpVisuals();
     photonCannons();
     observatory();
+    marketSystem();
 
     if (Game.time % 7 === 0) {
         getObjective();
@@ -5278,8 +4342,6 @@ module.exports.loop = function () {
 
     if (Game.time % 9 === 0) {
         linkSystem();
-        roomPlans();
-        marketSystem();
         laboratory();
     }
 
