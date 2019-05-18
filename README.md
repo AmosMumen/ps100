@@ -23,7 +23,7 @@ Current use: Shard 3 (20 cpu)
 
 (Market System - BETA) (Boost Labs - BETA)
 
-(Nuke Saftey System - BETA)
+(Nuke Safety System - BETA)
 
 ***  Live  ***
 
