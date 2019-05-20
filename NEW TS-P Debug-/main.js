@@ -74,6 +74,7 @@
 *                                        ('Trade-' + room.name) --  Manually transfer resources room to room.  Example:  'Trade-E11N11'   Placed in room E5N5 sends TO E11N11.
 *                                                                       Placement Selection:   energy by default (any room position except the listed below)
 *                                                                                                pos x: 10, y: 10  -  send Power
+*                                                                                                    x: 15, y: 15  -  send Ops <---- TODO
 *                                                                                                    x: 20, y: 20  -  send Hydrogen  (More to come)
 *
 *                                        ('Build-')  --  Place on the first spawn of the room.  Builds 10x10 base, requires 10x10 available squares (First spawn on bottom left of 10x10) xx[Removed for Improvement]xx
@@ -83,6 +84,10 @@
 *                                        ('Boost-Here') -- Once labs are built - use this flag to lock into room memory the location among the labs for creeps to recieve boosting.
 *                                        ('StrikeTeam')  --  Marks the target for all available Zealot types to attack to.
 *                                        ('HealerMover')  --  Lock in position for Healers 
+*                                        
+*                                           [TODO]
+*                                        ('Squad-' + squadName)  --  Memory.utils.squads[Squad-Example1]  --->  Assign flagged creep to squad: Example1
+*                                        ('NukeFleeAlert-' + safeRoomName)  --  room.memory.utils.saferoom ---> All creeps in room evac to safe room 25-50 ticks before Nuke Landing.
 *
 *                    White // Yellow - Link Flags  ('AssimLink' + room.name), ('Link1-' + room.name) ('Link2-' + room.name)
 *
@@ -115,6 +120,13 @@ console.log(' File Loaded: ' + Game.time + '  CPU: ' + Game.cpu.getUsed() + '  B
 
 
 
+///////////   Allies || Friendlies || Non-Hostiles    \\\\\\\\\\\\
+const friendly = ['FaMoS', 'TungstenShield', 'Orlet', 'Deltazulu', 'c01', 'Forloss'];
+
+
+
+
+
 //////////   NAME SELECT Function Constants  (Name Arrays)   \\\\\\\\\\\\\
 const names1 = ["Caycer", "Charmoo", "Dooglass", "Bowgen", "Orlet", "Tassadar", "Aiden", "Liam", "Fenix", "Aldaris", "Taldarin", "Jayden", "Karax", "Urun", "Adun", "Caden", "Kaldalis", "Karass", "Zeratul", "Caleb", "Mohandar", "Mojo", "Elijah", "Ulrezaj", "Alarak", "Ma Lash", "Nyon", "Felanis", "Talandar", "Clolarion", "Kizrath", "Aedus", "Heiberg", "Mertick", "Minos", "Dabiri", "Danimoth", "Demioch", "Pagan", "Edullon", "Eredas", "Gantrithor", "Eli", "Zyrkhan", "Animeth", "Hych", "Kan", "Axxath", "Tutus", "Ertyr", "Xioldol", "Dhamas", "Ful", "Aldinyn", "Gor", "Zith", "Xox", "Igith", "Aldazres", "Kyr", "Khurkus", "Ghitath", "Khar", "Ghel", "Ogren", "Kixxath", "Xiodeth", "Erazrech", "Onugrus", "Diath", "Zyth", "Diadal", "Tigin", "Dildrath", "Agdanath", "Indiotuch", "Dhox", "Khech", "Ganos", "Zaldel", "Ildros", "Xal Dan", "Zemos", "Kydos", "Oger", "Xavier", "Umymul", "Khyl", "Gyrkas", "Kumor", "Xeroch", "Aminoth", "Amedryx", "Irotoch", "Denor", "Dhiamys", "Edech", "Declan", "Kedoxus", "Anydalis", "Endazris", "Collues", "Mateo", "Micah", "Ellios", "Char Les", "Cay Ce", "Lex Ri", "Var Oli"];
 const names2 = ["Lyssrar", "Stefay", "Em", "Paulae", "Inga", "Erika", "Rohana", "Selendis", "Raszagal", "Talis", "Vorazun", "Ava", "Ji nara", "Eri", "Meri", "Kyrea", "Lasarra", "Hyreh", "Adonzi", "Ghyzsa", "Ziaryth", "Tiria", "Golla", "Ella", "Teszu", "Syno", "Aaliyah", "Fulno", "Hetun", "Zilgo", "Yrsygy", "Anea", "Aria", "Sasrin", "Kydus", "Lila", "Erede", "Adalyn", "Azroszu", "Erura", "Eta", "Tyte", "Gosryn", "Indaras", "Arindrel", "Ellygi", "Erille", "Nilzi", "Ealgoth", "Norae", "Mila", "Ryllial", "Healdath", "Ianygu", "Idada", "Idunzu", "Maya", "Mygi", "Yndy", "Zynol", "Elena", "Ruto", "Aru", "Hedy", "Itigath", "Ynzoty", "Alaina", "Otenzu", "Yzsello", "Oldryh", "Urza", "Geru", "Keirae", "Erundu", "Re Gan", "Mollae", "Nindrah", "Azso", "Nyguh", "Enzosrean", "Odidyh", "Arsyte", "Evae", "Akice", "Elianae", "Fadyl", "Dhuni", "Ghoxi", "Gondyn", "Tille", "Kaelyn", "Zeszyl", "Yta", "Fiatia", "Aldelzae", "Tyda", "Tozsa", "Adialli", "Sodae", "Kigu", "Kygo", "Viviae", "Jul Ana", "Gianna", "Sky Ter", "Jor Dyn", "Bezeal", "Rae Gin", "Searithe", "Leyora"];
@@ -122,6 +134,16 @@ const names2 = ["Lyssrar", "Stefay", "Em", "Paulae", "Inga", "Erika", "Rohana", 
 
 
 
+/////////  Word Directory for various event cases - Creep Speak --> cspeak Function \\\\\\\\\\
+const casewords = {
+
+    rising : ['Yes boss', 'Good to go', 'Go on', 'InnerPeace', 'To work', 'Narmal'],
+    upgrading : ['The Void', 'o//', 'Templars!', 'AIUR!', 'En Taro', '☯ ', '✝', ' 🛐', '⚛', ' 🎇', ' 🔆', '♾', '✨'],
+    fighting : ['AIUR!', 'Battle!', 'Su!Su!Su!', 'KeeHah!', '🔱', '💀💀💀', 'o/', '\o'],
+    falling : ['Aiur calls', 'Expiring', 'To Aiur', '😱 ', '💀 ', 'Farewell', '👻', '⛔']
+
+};
+//-------------------------------===================================-------------------------------------\\
 
         /*                  New Usage Version of Orlet's createBodyArry using object arrays vs. switches
         *  MOVE - "M"
@@ -142,8 +164,23 @@ const names2 = ["Lyssrar", "Stefay", "Em", "Paulae", "Inga", "Erika", "Rohana", 
         * Example 3:    "6wcm"
         */
 
+    // body object LUT
+const bodyObject =
+{
 
-const unitBuilds = {  // role: bodyPartsArry[0-8] called in Function as Teir \\
+    m: MOVE,
+    w: WORK,
+    c: CARRY,
+    a: ATTACK,
+    r: RANGED_ATTACK,
+    h: HEAL,
+    x: CLAIM,
+    k: CLAIM,
+    t: TOUGH
+};
+
+    // body parts - Unit Builds -----  // role: bodyPartsArry[0-8] called in Function as Tier \\
+const unitBuilds = {  
 
 //------------ // 650e  // 300e // 400e // 600e // 650e ------------------------------- Base Probes
     'probe' : [ "5w3m", "2w2m", "3w2m", "5w2m", "5w3m",  "5w3m", "5w3m", "5w3m", "5w3m"],
@@ -188,6 +225,14 @@ const unitBuilds = {  // role: bodyPartsArry[0-8] called in Function as Teir \\
     'templarpriest' : ["2m2h", "2m2h", "2m2h", "2m2h", "2m2h", "3m2h", "6m6h",  "8m8h",   "25m25h"]
 
 };
+//----------------------------------====================================-------------------------------\\
+
+
+
+
+
+
+
 
 
 ///// ---------   Warp Visuals Icons for role spawning --------- \\\\\\
@@ -258,62 +303,7 @@ const warpUnitsV2 = function (pW) {
     let dSource; // Desired Source Target
     let dContX;
     let dContY;
-    let ii;
-
-    if (pW.memory.timers === undefined) {
-        pW.memory.myRoom = 1;
-        pW.memory.timers = {};
-        pW.memory.timers.gtCycle = 1;
-        // --===>> Probe Time to Live Call Advance (Default: 80 ticks)
-        // Currently - change this in Memory tab    \\    
-        pW.memory.timers.probeTimer = 80;
-        pW.memory.timers.energyAttackTimer = 1;
-        pW.memory.timers.upgrade = true;
-        
-        pW.memory.repairs = 250000;
-        pW.memory.containers = {};
-        pW.memory.links = {};
-
-        if (Memory.observatory === undefined) {
-            Memory.observatory = {};
-            Memory.observatory.home = {};
-        }
-
-    }
-
-    if (pW.memory.labs === undefined) {
-
-        pW.memory.labs = {};
-        pW.memory.labs.loc = {};
-        pW.memory.labs.boosting = false;
-
-    }
-
-    if (pW.memory.utils === undefined) {
-
-        pW.memory.utils = {};
-        pW.memory.utils['storing'] = { storageFill: true, terminalFill: true };
-        pW.memory.utils.boosting = {};
-        pW.memory.utils.boosting['probe'] = { boost: false };
-        pW.memory.utils.boosting['probefar'] = { boost: false };
-        pW.memory.utils.boosting['assimfar'] = { boost: false };
-        pW.memory.utils.boosting['bldfar'] = { boost: false };
-        pW.memory.utils.boosting['assim'] = { boost: false };
-        pW.memory.utils.boosting['upgrader'] = { boost: false };
-        pW.memory.utils.boosting['builder'] = { boost: false };
-        pW.memory.utils.boosting['unique'] = { boost: false };
-        pW.memory.utils.boosting['pwrassim'] = { boost: false };
-        pW.memory.utils.boosting['extraction'] = { boost: false };
-        pW.memory.utils.boosting['zealot'] = { boost: false };
-        pW.memory.utils.boosting['altzealot'] = { boost: false };
-        pW.memory.utils.boosting['templarpriest'] = { boost: false };
-        pW.memory.utils.boosting['stalker'] = { boost:false };
-        pW.memory.utils.upgrade = true;
-        pW.memory.utils.towersFiring = true;
-        pW.memory.utils.incomingNuke = {};
-        pW.memory.utils.safeEscape = {};
-
-    }
+    let ii = 1;
 
 
     if (pW.storage && !pW.memory.utils['storing'].storageFill && pW.storage.store['energy'] < 10000) pW.memory.utils['storing'].storageFill = true;
@@ -353,24 +343,34 @@ const warpUnitsV2 = function (pW) {
 
 
 
+
+
+
+
+
+
+
+
     // Hostile Creeps   ------   War zone   -------   Safe Mode Setup \\
 
-    if (Game.time % 1200 === 0) {
-        const incomingNuke = pW.find(FIND_NUKES, { filter: s => s.timeToLand > 45000 });
-        if (incomingNuke[0]) {
-            console.log ( '  WARNING! ------- WARNING! ----------- WARNING!  --===   NUKE INCOMING ===--         ' + incomingNuke.timeToLand + '     ' + incomingNuke.room + '      ' + incomingNuke.launchRoomName);
-    
-            pW.memory.timers.nukeTimer = Game.time + incomingNuke.timeToLand - 3;
-            pW.memory.utils.incomingNuke = {};
-            pW.memory.utils.incomingNuke.roomName = incomingNuke.launchRoomName;
-        } 
-    }
-
+    ///  Safe Mode 3 ticks before Nuke lands
     if (pW.memory.timers.nukeTimer !== null && pW.memory.timers.nukeTimer < Game.time) {
         pW.controller.activateSafeMode();
         pW.memory.timers.nukeTimer === undefined;
     }
 
+    if (Game.time % 1200 === 0) {
+        const incomingNuke = pW.find(FIND_NUKES, { filter: s => s.timeToLand > 45000 });
+        if (incomingNuke[0]) {
+            console.log ( '  WARNING! ------- WARNING! ----------- WARNING!  --=== NUKE INCOMING ===--    Time to land: ' + incomingNuke[0].timeToLand + '     Destination: ' + incomingNuke[0].room + '      Coming from: ' + incomingNuke[0].launchRoomName);
+    
+            pW.memory.timers.nukeTimer = Game.time + incomingNuke[0].timeToLand - 3;
+            pW.memory.utils.incomingNuke = {};
+            pW.memory.utils.incomingNuke.roomName = incomingNuke[0].launchRoomName;
+        } 
+    }
+
+    ///  Energy Assault
     if (Game.flags.EnergyAttackOn && Game.flags.EnergyAttackOn.pos.roomName === name) {
         if (Game.time > pW.memory.timers.energyAttackTimer) {
             pW.createFlag(25, 25, 'HealRoom', COLOR_BLUE, COLOR_GREEN);
@@ -386,104 +386,113 @@ const warpUnitsV2 = function (pW) {
     }
 
 
+    ///  Check Hostile Creeps for Friendly Owners
+    if (Game.time % 10 === 0) {
 
-    if (Game.time % 3 === 0) {
-        const hAC = pW.find(FIND_HOSTILE_CREEPS, {
-            filter: s => ((s.getActiveBodyparts(ATTACK) > 0 ||
+        const hostileCreeps = pW.find(FIND_HOSTILE_CREEPS, {
+            filter: s => (s.getActiveBodyparts(ATTACK) > 0 ||
                 s.getActiveBodyparts(CLAIM) > 0 ||
-                s.getActiveBodyparts(RANGED_ATTACK) > 0)) && 
-                s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
+                s.getActiveBodyparts(RANGED_ATTACK) > 0)});
 
-        if (hAC[0]) {
+        if (hostileCreeps[0]) {    
 
-            const towers = _.sum(Game.structures, t => t.room.name === pW.name && t.structureType === 'tower' && t.energy > 350);
-            if (towers < 3) pW.createFlag(hAC[0].pos.x, hAC[0].pos.y, pW.name, COLOR_BLUE, COLOR_PURPLE);  
+            let hosCounter = 0;
+            let friendlyCounter = 0;
+            const hAC = new Array();
 
-            if (Game.time % 20 === 0) {
+            while (hosCounter < hostileCreeps.length) {    
+                hAC[0] = true;
 
-                if (pW.memory.SafeMode === undefined) {
-                    pW.memory.SafeMode = 1;
-                    return;
+                while (friendlyCounter < friendly.length) {
+
+                    if (hostileCreeps[hosCounter].owner.username === friendly[friendlyCounter]) {  
+                        friendlyCounter = friendly.length + 1;
+                        hAC[0] = false;
+                    }
+
+                    friendlyCounter++;
+
+                    if (friendlyCounter === friendly.length && hAC[0] === true) hAC.push(hostileCreeps[hosCounter]);
+
                 }
-                if (pW.memory.SafeMode > 0) { 
-                    if (pW.memory.SafeMode >= 7) pW.controller.activateSafeMode();
-                    pW.memory.SafeMode++;               
+
+                hosCounter++;
+
+            }
+
+            if (hAC[0]) {
+
+                const towers = _.sum(Game.structures, t => t.room.name === pW.name && t.structureType === 'tower' && t.energy > 350);
+                if (towers < 3) pW.createFlag(hAC[1].pos.x, hAC[1].pos.y, pW.name, COLOR_BLUE, COLOR_PURPLE);
+
+                if (Game.time % 20 === 0) {
+
+                    if (pW.memory.SafeMode === undefined) {
+                        pW.memory.SafeMode = 1;
+                        return;
+                    }
+                    if (pW.memory.SafeMode > 0) {
+                        if (pW.memory.SafeMode >= 7) pW.controller.activateSafeMode();
+                        pW.memory.SafeMode++;
+                    }
                 }
             }
+
         }
 
-
-
-        if (!hAC[0]) { 
+        if (!hostileCreeps[0]) {
             pW.memory.SafeMode = undefined;
             if (Game.flags[pW.name] && Game.flags[pW.name].color === COLOR_BLUE) Game.flags[pW.name].remove();
         }
+
     }
-    //======================================//
+
+
+
+    
 
 
 
 
 
+    /// Roles - Towers - Construction Sites - Probes @ Sources  - Dying Probes in home rooms
+    const roleCount = {
 
+        'upgraders' : _.sum(Game.creeps, (c) => c.memory.role === 'upgrader' && c.room.name === pW.name),
+        'builders' : _.sum(Game.creeps, (c) => c.memory.role === 'builder' && c.room.name === pW.name),
+        'repairs' : _.sum(Game.creeps, (c) => c.memory.role === 'repairs' && c.room.name === pW.name),
+        'probes' : _.sum(Game.creeps, (c) => c.memory.role === 'probe' && c.room.name === pW.name),
+        'assim' : _.sum(Game.creeps, (c) => c.memory.role === 'assim' && c.room.name === pW.name),
+        'probesfar' : _.sum(Game.creeps, (c) => c.memory.role === 'probefar' && c.memory.hroom === pW.name),
+        'builderfar' : _.sum(Game.creeps, (c) => c.memory.role === 'bldfar' && c.memory.hroom === pW.name),
+        'assimfar' : _.sum(Game.creeps, (c) => c.memory.role === 'assimfar' && c.memory.hroom === pW.name),
+        'extraction' : _.sum(Game.creeps, (c) => c.memory.role === 'extraction' && c.room.name === pW.name),
+        'pwrassim' : _.sum(Game.creeps, (c) => c.memory.role === 'pwrassim' && c.room.name === pW.name),
+        'srcxp' : _.sum(Game.creeps, (c) => c.memory.role === 'probe' && c.memory.wSource === pW.memory.src1Id),
+        'srcyp' : _.sum(Game.creeps, (c) => c.memory.role === 'probe' && c.memory.wSource === pW.memory.src2Id),
+        'probetimer' : _.filter(Game.creeps, (c) => c.memory.role === 'probe' && c.room.name === pW.name && c.ticksToLive < pW.memory.timers.probeTimer),
+        'towers' : _.sum(Game.structures, (t) => t.structureType === 'tower' && t.room.name === pW.name),
+        'construct' : pW.find(FIND_MY_CONSTRUCTION_SITES)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Working Creep count on each source Unique(1-3) or Probe(4-8)
-    const srcxp = _.sum(Game.creeps, (c) => c.memory.role === 'probe' && c.memory.wSource === pW.memory.src1Id);
-    const srcyp = _.sum(Game.creeps, (c) => c.memory.role === 'probe' && c.memory.wSource === pW.memory.src2Id);
-
-    /// Role End of Life Timers ///
-    const probetimer = _.filter(Game.creeps, (c) => c.memory.role === 'probe' && c.room.name === pW.name && c.ticksToLive < pW.memory.timers.probeTimer);
-
-    /// Role Counts ///
-    const upgraders = _.sum(Game.creeps, (c) => c.memory.role === 'upgrader' && c.room.name === pW.name);
-    const builders = _.sum(Game.creeps, (c) => c.memory.role === 'builder' && c.room.name === pW.name);
-    const repairs = _.sum(Game.creeps, (c) => c.memory.role === 'repairs' && c.room.name === pW.name);
-    const probes = _.sum(Game.creeps, (c) => c.memory.role === 'probe' && c.room.name === pW.name);
-    const assim = _.sum(Game.creeps, (c) => c.memory.role === 'assim' && c.room.name === pW.name);
-    const probesfar = _.sum(Game.creeps, (c) => c.memory.role === 'probefar' && c.memory.hroom === pW.name);
-    const builderfar = _.sum(Game.creeps, (c) => c.memory.role === 'bldfar' && c.memory.hroom === pW.name);
-    const assimfar = _.sum(Game.creeps, (c) => c.memory.role === 'assimfar' && c.memory.hroom === pW.name);
-    const extraction = _.sum(Game.creeps, (c) => c.memory.role === 'extraction' && c.room.name === pW.name);
-    const pwrassim = _.sum(Game.creeps, (c) => c.memory.role === 'pwrassim' && c.room.name === pW.name);
-
-    /// Towers && Misc ///
-    const towers = _.sum(Game.structures, (t) => t.structureType === 'tower' && t.room.name === pW.name);
-    const construct = pW.find(FIND_MY_CONSTRUCTION_SITES); // Site count for Builder Role Production    
+    }
 
     /// Room Visual Log -==-
     pW.visual.text("-=(AmOs Clan)=-", 25, 0, { align: 'center', opacity: 0.4 });
     pW.visual.text(" 🏰:  " + pW.name, 25, 1, { align: 'center', opacity: 0.4 });
     pW.visual.text(" ⚡️:  " + pW.energyAvailable + "/" + pW.energyCapacityAvailable, 25, 2, { align: 'center', opacity: 0.4 });
-    pW.visual.text(" ☀️:  " + probes, 1, 1, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 📦:  " + assim, 1, 2, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🔨:  " + builders, 1, 4, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🔮:  " + upgraders, 1, 3, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🔀 ☀️:  " + probesfar, 42, 1, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🔀 📦:  " + assimfar, 42, 2, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🔀 🔨:  " + builderfar, 42, 3, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🔧:  " + repairs, 1, 5, { align: 'left', opacity: 0.4 });
-    pW.visual.text(" 🌠:  " + towers, 25, 3, { align: 'right', opacity: 0.4 });
-    pW.visual.text(" 🚧:  " + construct.length, 25, 4, { align: 'right', opacity: 0.4 });
+    pW.visual.text(" ☀️:  " + roleCount['probes'], 1, 1, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 📦:  " + roleCount['assim'], 1, 2, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🔨:  " + roleCount['builders'], 1, 4, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🔮:  " + roleCount['upgraders'], 1, 3, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🔀 ☀️:  " + roleCount['probesfar'], 42, 1, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🔀 📦:  " + roleCount['assimfar'], 42, 2, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🔀 🔨:  " + roleCount['builderfar'], 42, 3, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🔧:  " + roleCount['repairs'], 1, 5, { align: 'left', opacity: 0.4 });
+    pW.visual.text(" 🌠:  " + roleCount['towers'], 25, 3, { align: 'right', opacity: 0.4 });
+    pW.visual.text(" 🚧:  " + roleCount['construct'].length, 25, 4, { align: 'right', opacity: 0.4 });
     new RoomVisual(pW.name).rect(21.5, -0.75, 7, 1, { fill: 'transparent', stroke: '#f24' });
 
-
-
-
-
-
+    
 
 
 
@@ -492,7 +501,6 @@ const warpUnitsV2 = function (pW) {
 
     /// ---- Room Loop Inner Cycle - Update Essential Information \\\ ----  Cycle Begins ----
     if (Game.time > pW.memory.timers.gtCycle) {
-        pW.memory.stage = pW.controller.level; // Controller Level Stored for Creeps use
 
         // Establish Mineral Deposits
         const minerals = pW.find(FIND_MINERALS);
@@ -513,10 +521,7 @@ const warpUnitsV2 = function (pW) {
         if (sources.length > 0) {
             pW.memory.src1Id = sources[0].id;
             const scA = sources[0].pos.findInRange(FIND_STRUCTURES, 1, { filter: { structureType: STRUCTURE_CONTAINER } });
-            if (scA[0] === undefined && pW.memory.baseBuilder !== undefined && pW.memory.baseBuilder.containers.scA === 1) {
-                pW.memory.baseBuilder.containers.scA = 0;
-                pW.memory.baseBuilder.timers.buildTimer = 0;
-            }
+            
             if (scA[0]) {
                 if (pW.memory.containers.s1ContA === undefined) { pW.memory.containers.s1ContA = {} }
                 pW.memory.containers.s1ContA.goX = scA[0].pos.x;
@@ -526,10 +531,7 @@ const warpUnitsV2 = function (pW) {
             if (sources[1]) {
                 pW.memory.src2Id = sources[1].id;
                 const scB = sources[1].pos.findInRange(FIND_STRUCTURES, 1, { filter: { structureType: STRUCTURE_CONTAINER } });
-                if (scB[0] === undefined && pW.memory.baseBuilder !== undefined && pW.memory.baseBuilder.containers.scB === 1) {
-                    pW.memory.baseBuilder.containers.scB = 0;
-                    pW.memory.baseBuilder.timers.buildTimer = 0;
-                }
+               
                 if (scB[0]) {
                     if (pW.memory.containers.s2ContB === undefined) { pW.memory.containers.s2ContB = {} }
                     pW.memory.containers.s2ContB.goX = scB[0].pos.x;
@@ -548,10 +550,6 @@ const warpUnitsV2 = function (pW) {
 
         /// Links Established
         const upLinkFound = pW.controller.pos.findInRange(FIND_STRUCTURES, 3, { filter: { structureType: STRUCTURE_LINK } });
-        if (upLinkFound[0] === undefined && pW.memory.baseBuilder !== undefined && pW.memory.baseBuilder.links.cLink === 1) { 
-            pW.memory.baseBuilder.links.cLink = 0;
-            pW.memory.baseBuilder.timers.buildTimer = 0;
-        }
 
         if (upLinkFound[0]) {
             
@@ -608,7 +606,6 @@ const warpUnitsV2 = function (pW) {
 
 
 
-
     /// -------  If room energy is less than 300, skip to the next room ------ \\\
     if (pW.energyAvailable < 300) return;
 
@@ -616,7 +613,6 @@ const warpUnitsV2 = function (pW) {
 
     /// Establishing Available Spawn  -=***=-
     const spawn = _.filter(Game.spawns, s => s.room.name === pW.name && !s.spawning)[0];
-
     if (spawn === undefined) return;
     //------------------------------------------------------------------------------\\
 
@@ -638,12 +634,12 @@ const warpUnitsV2 = function (pW) {
 
 
     /// Emergency Warp in Probes ☀️☀️ --- contingency plan to restore functions ///
-    if (probes < 1 && Game.time % 10 === 0) {
+    if (roleCount['probes'] < 1 && Game.time % 10 === 0) {
         if (pW.energyAvailable < getEnergyStatus(spawn) * 200) {
             // Count of creeps attending Source 1,2  - set to dSource(Desired Source)
-            if (srcxp < 1) { dSource = pW.memory.src1Id }
-            else if (srcyp < 1) { dSource = pW.memory.src2Id }
-            else if (srcxp > 0 && srcyp > 0 && probetimer.length > 0) { dSource = probetimer[0].memory.wSource }
+            if (roleCount['srcxp'] < 1) { dSource = pW.memory.src1Id }
+            else if (roleCount['srcyp'] < 1) { dSource = pW.memory.src2Id }
+            else if (roleCount['srcxp'] > 0 && roleCount['srcyp'] > 0 && roleCount['probetimer'][0]) { dSource = roleCount['probetimer'][0].memory.wSource }
             // Set containters and links by sources - set to dCont and dLink
             if (dSource === undefined || pW.memory.containers.s1ContA === undefined) { console.log('Alert! Build Containers!!'); return }
             if (dSource === pW.memory.src1Id) { dContX = pW.memory.containers.s1ContA.goX; dContY = pW.memory.containers.s1ContA.goY }
@@ -655,7 +651,7 @@ const warpUnitsV2 = function (pW) {
     }
 
     /// Emergency Warp in Assimilator 📦📦 --- contingency plan to restore base functions ///
-    if (assim < 1 && Game.time % 20 === 0) {
+    if (roleCount['assim'] < 1 && Game.time % 20 === 0) {
         if (pW.energyAvailable < getEnergyStatus(spawn) * 200) {
             warpingUnits(spawn, 1, getName(), { memory: { role: 'assim' } });
             return;
@@ -672,35 +668,34 @@ const warpUnitsV2 = function (pW) {
     //////  Standard Units  \\\\\\
 
     /// Warp Probes ///  ☀️☀️☀️☀️☀️☀️ ---- Dedicated Mining Probe - (No CARRY parts -- Drops Energy into Containers) ----
-    if (probes < 3 && probetimer.length > 0 || probes < 2) {
+    if (roleCount['probes'] < 3 && roleCount['probetimer'][0] || roleCount['probes'] < 2) {
         // Count of creeps attending Source 1 or 2 - dSource
-        if (srcxp < 1) { dSource = pW.memory.src1Id }
-        else if (srcyp < 1) { dSource = pW.memory.src2Id }
-        else if (srcxp > 0 && srcyp > 0 && probetimer.length > 0) { dSource = probetimer[0].memory.wSource }
+        if (roleCount['srcxp'] < 1) { dSource = pW.memory.src1Id }
+        else if (roleCount['srcyp'] < 1) { dSource = pW.memory.src2Id }
+        else if (roleCount['srcxp'] > 0 && roleCount['srcyp'] > 0 && roleCount['probetimer'][0]) { dSource = roleCount['probetimer'][0].memory.wSource }
         // Set containters by sources - dCont
         if (dSource === undefined || pW.memory.containers.s1ContA === undefined) { console.log('Alert! Build Containers!!'); return }
         if (dSource === pW.memory.src1Id) { dContX = pW.memory.containers.s1ContA.goX; dContY = pW.memory.containers.s1ContA.goY }
         if (dSource === pW.memory.src2Id) { dContX = pW.memory.containers.s2ContB.goX; dContY = pW.memory.containers.s2ContB.goY }
-        if (dContX === undefined) { return }
+        if (dContX === undefined) return;
         warpingUnits(spawn, getEnergyStatus(spawn), 'Probe-' + Game.time.toString(36), { memory: { role: 'probe', wSource: dSource, x: dContX, y: dContY } });
         return;
     }
 
     /// Warp Assimilators ///  📦📦📦📦📦📦  ---- Dedicated Energy Transporter.  Assimilates collected energy into usable energy ----
-    if (probes > 0 && assim < 2) {
-        ii = 1;
-        const fdr = pW.find(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.energy > 2200 });
+    if (roleCount['probes'] > 0 && roleCount['assim'] === 0) {
+        const fdr = pW.find(FIND_DROPPED_RESOURCES, { filter: d => d.energy > 2200 });
 
         if (fdr[0]) ii = 2;
         if (fdr[0] && fdr[0].energy > 2900) ii = 3;
-        if (assim < ii){ 
+        if (roleCount['assim'] < ii){ 
             warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'assim', fillStorage: true } });
             return;
         }
     }
 
     /// Warp Archons ///  🔮🔮🔮🔮🔮🔮 ---- Dedicated Controller Upgrader (Uses Link / Storage primary)
-    if (upgraders < 1 && assim > 0 && pW.energyAvailable === pW.energyCapacityAvailable) {   
+    if (Game.time % 135 === 0 && roleCount['upgraders'] === 0 && roleCount['assim'] > 0 && pW.energyAvailable === pW.energyCapacityAvailable) {   
         if (pW.controller.level === 8 && pW.controller.ticksToDowngrade < 60000 || pW.controller.level <= 7) {
             pW.memory.utils.upgrade = true;
         }
@@ -715,24 +710,30 @@ const warpUnitsV2 = function (pW) {
         }
     }
 
-    /// Warp Builders ///  🔨🔨🔨🔨🔨🔨 ----  Performs Building Fuction until 0 sites remain - Switches to Repairs Function
-    if (builders < 1 && construct.length > 0 || builders < 2 && construct.length > 24) {
-        warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'builder' } });
-        return;
+    if (Game.time % 5 === 0) {
+
+        /// Warp Builders ///  🔨🔨🔨🔨🔨🔨 ----  Performs Building Fuction until 0 sites remain - Switches to Repairs Function
+        if (roleCount['builders'] === 0 && roleCount['construct'].length > 0 || roleCount['builders'] < 2 && roleCount['construct'].length > 24) {
+            warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'builder' } });
+            return;
+        }
+
+        /// Warp Power Assimilators ///  ⭕⭕⭕    ---- Dedicated Power Transporter.  Assimilates collected power into Power Spawn Processing ----
+        if (pW.memory.powerSpawn && pW.energyAvailable === pW.energyCapacityAvailable && pW.terminal.store['power'] > 1300 && pW.terminal.store['energy'] > 8000 && roleCount['pwrassim'] === 0) {
+            spawn.spawnCreep(createBody("2c2m"), getName(), { memory: { role: 'pwrassim', moving: true, type: 'p' } });
+            return;
+        }
+
+        /// Warp Mineral Miners ///  🔩🔩🔩    ----  Works Extractor for Mineral Resources
+        if (pW.memory.extractor && pW.energyAvailable === pW.energyCapacityAvailable && roleCount['extraction'] === 0) {
+            if (Game.getObjectById(pW.memory.mineral).ticksToRegeneration > 40) return;
+            warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'extraction' } });
+            return;
+        }
+
     }
 
-    /// Warp Power Assimilators ///  ⭕⭕⭕    ---- Dedicated Power Transporter.  Assimilates collected power into Power Spawn Processing ----
-    if (pW.memory.powerSpawn && pW.energyAvailable === pW.energyCapacityAvailable && pW.terminal.store['power'] > 1300 && pW.terminal.store['energy'] > 8000 && pwrassim < 1) {         
-        spawn.spawnCreep(createBody("2c2m"), getName(), { memory: { role: 'pwrassim', moving: true, type: 'p' } });
-            return;      
-    }
-
-    /// Warp Mineral Miners ///  🔩🔩🔩    ----  Works Extractor for Mineral Resources
-    if (pW.memory.extractor !== undefined && pW.energyAvailable === pW.energyCapacityAvailable && extraction < 1) {
-        if (Game.getObjectById(pW.memory.mineral).ticksToRegeneration > 40) return;
-        warpingUnits(spawn, getEnergyStatus(spawn), getName(), { memory: { role: 'extraction' } });
-        return;
-    }
+    
     
 };
 
@@ -750,51 +751,122 @@ const warpUnitsV2 = function (pW) {
 
 
 const warpUnitsV1 = function (pW) {
+
     /// Spawn Variables \\\ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     let dSource; // Desired Source Target
 
-    //  --===>>  Game Time Inner Loop Recycles (Default: 1000 ticks)
-    // Cycle variable found at end of the Inner Loop just below here \\
+    
     if (pW.memory.timers === undefined) {
         pW.memory.myRoom = 1;
         pW.memory.timers = {};
+        //  --===>> gtCycle:   Game Time Inner Loop Recycles (Default: 1000 ticks) -- Changes to 30,000 ticks at RCL-8 with 10 labs.
+        // Cycle variable found at end of the Inner Loop just below here \\
         pW.memory.timers.gtCycle = 1;
-        // --===>> Probe Time to Live Call Advance (Default: 80 ticks)
+
+        // --===>> Probe Time to Live Call Advance (Default: 60 ticks)
         // Currently - change this in Memory tab    \\    
-        pW.memory.timers.probeTimer = 80;
+        pW.memory.timers.probeTimer = 60;
         pW.memory.timers.energyAttackTimer = 1;
-        pW.memory.timers.upgrade = true;
+
         pW.memory.repairs = 250000;
         pW.memory.containers = {};
         pW.memory.links = {};
+        pW.memory.labs = {};
+        pW.memory.labs.loc = {};
+        pW.memory.labs.boosting = false;
+
+        pW.memory.utils = {};
+        pW.memory.utils['storing'] = { storageFill: true, terminalFill: true };
+        pW.memory.utils.boosting = {};
+        pW.memory.utils.boosting['probe'] = { boost: false };
+        pW.memory.utils.boosting['probefar'] = { boost: false };
+        pW.memory.utils.boosting['assimfar'] = { boost: false };
+        pW.memory.utils.boosting['bldfar'] = { boost: false };
+        pW.memory.utils.boosting['assim'] = { boost: false };
+        pW.memory.utils.boosting['upgrader'] = { boost: false };
+        pW.memory.utils.boosting['builder'] = { boost: false };
+        pW.memory.utils.boosting['unique'] = { boost: false };
+        pW.memory.utils.boosting['pwrassim'] = { boost: false };
+        pW.memory.utils.boosting['extraction'] = { boost: false };
+        pW.memory.utils.boosting['zealot'] = { boost: false };
+        pW.memory.utils.boosting['altzealot'] = { boost: false };
+        pW.memory.utils.boosting['templarpriest'] = { boost: false };
+        pW.memory.utils.boosting['stalker'] = { boost:false };
+        pW.memory.utils.upgrade = true;
+        pW.memory.utils.towersFiring = true;
+        pW.memory.utils.incomingNuke = {};
+        pW.memory.utils.safeEscape = {};
+
     };
 
-    if (Game.time % 3 === 0) {
-        const hAC = pW.find(FIND_HOSTILE_CREEPS, {
-                    filter: s => ((s.getActiveBodyparts(ATTACK) > 0 ||
-                        s.getActiveBodyparts(CLAIM) > 0 ||
-                        s.getActiveBodyparts(RANGED_ATTACK) > 0)) && 
-                        s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
 
-        if (hAC[0]) pW.createFlag(hAC[0].pos.x, hAC[0].pos.y, pW.name, COLOR_BLUE, COLOR_PURPLE);      
 
-        if (!hAC[0]) { 
+
+
+
+
+
+    ///  Check Hostile Creeps for Friendly Owners
+    if (Game.time % 10 === 0) {
+
+        const hostileCreeps = pW.find(FIND_HOSTILE_CREEPS, {
+                filter: s => (s.getActiveBodyparts(ATTACK) > 0 ||
+                            s.getActiveBodyparts(CLAIM) > 0 ||
+                            s.getActiveBodyparts(RANGED_ATTACK) > 0)});
+
+        if (hostileCreeps[0]) {    
+
+            let hosCounter = 0;
+            let friendlyCounter = 0;
+            const hAC = new Array();
+
+            while (hosCounter < hostileCreeps.length) {    
+                hAC[0] = true;
+
+                while (friendlyCounter < friendly.length) {
+
+                    if (hostileCreeps[hosCounter].owner.username === friendly[friendlyCounter]) {  
+                        friendlyCounter = friendly.length + 1;
+                        hAC[0] = false;
+                    }
+
+                    friendlyCounter++;
+
+                    if (friendlyCounter === friendly.length && hAC[0] === true) hAC.push(hostileCreeps[hosCounter]);
+
+                }
+
+                hosCounter++;
+
+            }
+
+            if (hAC[0]) {
+
+                const towers = _.sum(Game.structures, t => t.room.name === pW.name && t.structureType === 'tower' && t.energy > 350);
+                if (towers < 3) pW.createFlag(hAC[1].pos.x, hAC[1].pos.y, pW.name, COLOR_BLUE, COLOR_PURPLE);
+
+                if (Game.time % 20 === 0) {
+
+                    if (pW.memory.SafeMode === undefined) {
+                        pW.memory.SafeMode = 1;
+                        return;
+                    }
+                    if (pW.memory.SafeMode > 0) {
+                        if (pW.memory.SafeMode >= 7) pW.controller.activateSafeMode();
+                        pW.memory.SafeMode++;
+                    }
+                }
+            }
+
+        }
+
+        if (!hAC[0]) {
             pW.memory.SafeMode = undefined;
             if (Game.flags[pW.name] && Game.flags[pW.name].color === COLOR_BLUE) Game.flags[pW.name].remove();
-        }
+        }  
 
-        if(hAC[0] && Game.time % 20 === 0) { 
-            
-            if (pW.memory.SafeMode === undefined) {
-                pW.memory.SafeMode = 1;
-                return;
-            }
-            if (pW.memory.SafeMode > 0) { 
-                pW.memory.SafeMode++;
-                if (pW.memory.SafeMode >= 5) pW.controller.activateSafeMode();
-            }
-        }
     }
+
     //======================================//
 
 
@@ -811,9 +883,10 @@ const warpUnitsV1 = function (pW) {
     new RoomVisual(pW.name).rect(21.5, -0.75, 7, 1, { fill: 'transparent', stroke: '#f24' });
 
 
+
+
     /// ---- Room Loop Inner Cycle - Update Essential Information \\\ ----  Cycle Begins ----
     if (Game.time > pW.memory.timers.gtCycle) {
-        pW.memory.stage = pW.controller.level; // Controller Level Stored for Creeps use
 
         // Establish Mineral Deposits
         const minerals = pW.find(FIND_MINERALS);
@@ -854,6 +927,8 @@ const warpUnitsV1 = function (pW) {
         return;
     }
     // -----=-=-=-=-=-=-=-=-=-  End Inner Cycle -=-=-=-=-=-=-=-=-=-=-=-=--=----- //
+
+
 
     /// -------  If room energy is less than 300, skip to the next room ------ \\\
     if (pW.energyAvailable < 300) return;
@@ -933,7 +1008,7 @@ const roomNotMine = function (pW) {
         const hAC = pW.find(FIND_HOSTILE_CREEPS, {
             filter: s => ((s.getActiveBodyparts(ATTACK) > 0 ||
                 s.getActiveBodyparts(RANGED_ATTACK) > 0)) && 
-                s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
+                s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS' && s.owner.username !== 'c01'});
 
         if(hAC[0]) pW.createFlag(hAC[0].pos.x, hAC[0].pos.y, pW.name, COLOR_BLUE, COLOR_PURPLE);
     }
@@ -1093,7 +1168,7 @@ const photonCannons = function () {
         
         // find hostiles
          const invaderCreep = Game.rooms[name].find(FIND_HOSTILE_CREEPS, {
-            filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
+            filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS' && s.owner.username !== 'c01'});
 
         if (invaderCreep[0]) {
 
@@ -1120,7 +1195,7 @@ const photonCannons = function () {
         }
 
         const powerCreepers = Game.rooms[name].find(FIND_HOSTILE_POWER_CREEPS, {
-            filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS'});
+            filter: s => s.owner.username !== 'Deltazulu' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'FaMoS' && s.owner.username !== 'c01'});
 
         if (powerCreepers[0]) {
             // pew and move on to next room
@@ -1271,6 +1346,12 @@ const terminalSystem = function (f) {
 
                 return;
 
+                case 'ops':
+
+                if (r.terminal.send('ops', r.terminal.store['ops'], f.pos.roomName, 'Ops Sent') === OK) f.remove(); // Send Ops (Place Flag: x 15, y: 15)
+
+                return;
+
                 case 'h':
 
                 if (r.terminal.send('H', r.terminal.store['H'], f.pos.roomName, 'Hydrogen Sent') === OK) f.remove(); // Send Hydrogen (Place Flag: x 20, y: 20)
@@ -1338,6 +1419,11 @@ const observatory = function () {
 
     if (!_.filter(Game.flags, fl => fl.name.slice(0,6) === 'Scout-')) return;
 
+    if (Memory.observatory === undefined) {
+        Memory.observatory = {};
+        Memory.observatory.home = {};
+    }
+
     const observer = _.filter(Game.structures, s => s.structureType === 'observer');
 
     if (observer[0]) {
@@ -1355,7 +1441,7 @@ const observatory = function () {
 
             }
 
-
+            ///  Flag name leads the Observatory to see room -  Example: 'Scout-A-E12N15' --->  placed in the room to observe, calls the Observatory in E12N15,
             const flag = Game.flags['Scout-' + Memory.observatory.home[o.room.name].observeRoom + '-' + o.room.name];
 
             if (flag === undefined) {
@@ -1761,16 +1847,16 @@ const marketSystem = function () {
 
     }
 
-    //if (Game.time % 300 === 0) {
+    if (Game.time % 45000 === 0) {
         for(const id in Game.market.orders) {
 
             console.log(Game.market.orders[id].active + '   ' + Game.market.orders[id].amount + '  ' + Game.market.orders[id].created + ' Before the if -----');
            if (Game.market.orders[id].active === false && Game.market.orders[id].amount === 0 && Game.market.orders[id].created < Game.time + 100) {
             console.log(Game.market.orders[id].active + '   ' + Game.market.orders[id].amount + '  ' + Game.market.orders[id].created + ' Inside the if statement  ' + id + Game.market.orders[id].roomName);
-               //console.log(Game.market.cancelOrder(id) + '  -------  Checking the Cancel Order Function.  ------' );
+            console.log(Game.market.cancelOrder(id) + '  -------  Checking the Cancel Order Function.  ------' );
            }
         } 
-    //}
+    }
 
     for (const name in Game.rooms) {
         const r = Game.rooms[name];
@@ -2683,7 +2769,7 @@ const roles = function () {
                         continue;
                     }
 
-                    if (creep.room.terminal && creep.room.terminal.store['energy'] > 108000) {
+                    if (creep.room.terminal && creep.room.terminal.store['energy'] > 155000) {
                             if (creep.withdraw(creep.room.terminal, 'energy') === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#F3FF43' }, reusePath: 15 });
                             continue;                    
                     }
@@ -3060,15 +3146,7 @@ const roles = function () {
 */
             case 'zealot':
 
-                if (Game.time % Math.floor(Math.random() * (40 - 4) + 6) === 0) creep.say(cSpeak(6), [true]);
-
-                if (creep.room.name !== creep.memory.troom) {
-
-                    if(creep.hits < creep.hitsMax) creep.heal(creep);
-
-                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
-                    continue;
-                }
+                if (Game.time % Math.floor(Math.random() * (290 - 4) + 6) === 0) creep.say(cSpeak(6), [true]);
 
                 if (creep.room.name === creep.memory.troom) {
 
@@ -3077,18 +3155,27 @@ const roles = function () {
                         console.log ('Zealot Testing Guard Flag moveTo.  moveTo return: ', creep.moveTo(guardFlag, { reusePath: 10 }));
 
                         const hostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                        if (hostile && hostile.owner.username !== 'Deltazulu') creep.attack(hostile);                                          
+                        if (hostile && hostile.owner.username !== 'Deltazulu' && s.owner.username !== 'FaMoS' && s.owner.username !== 'TungstenShield' && s.owner.username !== 'c01') creep.attack(hostile);                                          
                         continue;
                     }
 
                     const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    if (closestHostile && closestHostile.owner.username !== 'Deltazulu') {
-                        creep.attack(closestHostile);
-                        creep.heal(creep);
-                        creep.moveTo(closestHostile);                      
+                    if (closestHostile && friendly.indexOf(closestHostile.owner.username === -1) ) {
+                        console.log(closestHostile.owner.username);
+                        if (creep.attack(closestHostile) === OK && Game.time % 2 === 0) creep.say(cSpeak(6.1), [true]);
+                        creep.moveTo(closestHostile);
                         continue;
                     }
 
+
+/* 
+                    if (closestHostile && closestHostile.owner.username !== 'Deltazulu' && closestHostile.owner.username !== 'FaMoS' && closestHostile.owner.username !== 'TungstenShield' && closestHostile.owner.username !== 'c01') {
+                        creep.attack(closestHostile);
+                        creep.moveTo(closestHostile);
+                        if (Game.time % Math.floor(Math.random() * (7) + 1) === 0) creep.say(cSpeak(6.1), [true]);                                              
+                        continue;
+                    }
+ */
                     const closestInjuredUnit = creep.pos.findClosestByRange(FIND_MY_CREEPS, { filter: (c) => (c.hits < c.hitsMax) });
                     if (closestInjuredUnit) {
                         if (creep.heal(closestInjuredUnit) === ERR_NOT_IN_RANGE) {
@@ -3129,6 +3216,10 @@ const roles = function () {
                         if (removeFlags[0]) removeFlags[0].remove();                       
 
                     }
+                    
+                } else {
+                    if(creep.hits < creep.hitsMax) creep.heal(creep);
+                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });                   
                 }
                 continue;
 
@@ -3415,38 +3506,40 @@ const roles = function () {
 
                 if (Game.time % Math.floor(Math.random() * (40 - 4) + 10) === 0) creep.say(cSpeak(6), [true]);
 
-                if (creep.room.name !== creep.memory.troom) {
-                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
-                    continue;
-                }
-
                 if (creep.room.name === creep.memory.troom) {
 
-                    if (creep.hits === creep.hitsMax) creep.memory.healthy = true;
-                    if (creep.hits < 70) creep.memory.healthy = false;
-                    if (creep.memory.healthy === false) continue;
+                    const guardFlag = Game.flags['Guard-' + creep.room.name];
+                    if (guardFlag) {
+                        if (creep.pos.x === guardFlag.pos.x && creep.pos.y === guardFlag.pos.y) {
+
+                            const targs = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3);
+                            if(targs[0] && friendly.indexOf(targs) === -1) {
+                                const minHits = _.min(Object.keys(targs), o => targs[o].hits);
+                                if (creep.rangedAttack(targs[minHits]) === OK) creep.say(cSpeak(6.1), [true]);
+                            }
+
+                        } else creep.moveTo(guardFlag, { reusePath: 10 });
+                                             
+                        continue;
+                    }
 
                     const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    if (closestHostile && closestHostile.owner.username != 'Deltazulu') {
+                    if (closestHostile && closestHostile.owner.username != 'Deltazulu' && closestHostile.owner.username !== 'FaMoS' && closestHostile.owner.username !== 'TungstenShield' && closestHostile.owner.username !== 'c01') {
                         if (creep.rangedAttack(closestHostile) === ERR_NOT_IN_RANGE) creep.moveTo(closestHostile);
                         continue;
-                    }
-
-                    const goFlag = Game.flags['Guard-' + creep.room.name];
-                    if (goFlag) {
-                        creep.moveTo(goFlag, { reusePath: 10 });
-                        continue;
-                    }
+                    }                 
 
                     const strikeFlag = Game.flags['StrikeTeam'];
                     if (strikeFlag) {
                         if (creep.memory.troom !== strikeFlag.pos.roomName) creep.memory.troom = strikeFlag.pos.roomName;
+                        if (creep.hits === creep.hitsMax) creep.memory.healthy = true; else if (creep.hits < 70) creep.memory.healthy = false;                      
+                        if (creep.memory.healthy === false) continue;
 
                         const structs = strikeFlag.pos.lookFor(LOOK_STRUCTURES);
                         if(structs[0]) {
                             if (creep.rangedAttack(structs[0]) === ERR_NOT_IN_RANGE) {
                                 creep.moveTo(strikeFlag);
-                                if (structs[0].hits < 3000) creep.room.createFlag(structs[0].pos, undefined, COLOR_YELLOW, COLOR_BROWN);
+                                if (structs[0].hits < 3000 && structs[0].structureType === 'powerBank') creep.room.createFlag(structs[0].pos, undefined, COLOR_YELLOW, COLOR_BROWN);
                             }
                             continue;
                         }
@@ -3464,6 +3557,9 @@ const roles = function () {
                         const roads = creep.pos.lookFor(LOOK_STRUCTURES);
                         if(roads[0] && roads[0].structureType === 'road')  creep.move(Math.floor(Math.random() * (7 + 1)));
                         }
+
+                    } else {
+                        creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
                     }
                 continue;
 
@@ -3483,19 +3579,10 @@ const roles = function () {
 
                 if (Game.time % Math.floor(Math.random() * (40 - 4) + 12) === 0) creep.say(cSpeak(6), [true]);
 
-                if (creep.room.name !== creep.memory.troom) {
-                    creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
-                    continue;
-                }
-
-                if (creep.room.name === creep.memory.troom) {
-
-                    if (creep.hits === creep.hitsMax) creep.memory.healthy = true;
-                    if (creep.hits < 70) creep.memory.healthy = false;
-                    if (creep.memory.healthy === false) continue;
+                if (creep.room.name === creep.memory.troom) {                
 
                     const closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    if (closestHostile && closestHostile.owner.username != 'Deltazulu') {
+                    if (closestHostile && closestHostile.owner.username != 'Deltazulu' && closestHostile.owner.username !== 'FaMoS' && closestHostile.owner.username !== 'TungstenShield' && closestHostile.owner.username !== 'c01') {
                         if (creep.attack(closestHostile) === ERR_NOT_IN_RANGE) {
                             creep.moveTo(closestHostile);
                         }
@@ -3512,11 +3599,14 @@ const roles = function () {
                     if (strikeFlag) {
                         if (creep.memory.troom !== strikeFlag.pos.roomName) creep.memory.troom = strikeFlag.pos.roomName;
 
+                        if (creep.hits === creep.hitsMax) creep.memory.healthy = true; else if (creep.hits < 70) creep.memory.healthy = false;
+                        if (creep.memory.healthy === false) continue;
+
                         const structs = strikeFlag.pos.lookFor(LOOK_STRUCTURES);
                         if(structs[0]) {
                             if (creep.attack(structs[0]) === ERR_NOT_IN_RANGE) {
                                 creep.moveTo(strikeFlag);
-                                if (structs[0].hits < 3000) creep.room.createFlag(structs[0].pos, undefined, COLOR_YELLOW, COLOR_BROWN);
+                                if (structs[0].hits < 3000 && structs[0].structureType === 'powerBank') creep.room.createFlag(structs[0].pos, undefined, COLOR_YELLOW, COLOR_BROWN);
                             }
                             continue;
                         }
@@ -3532,10 +3622,9 @@ const roles = function () {
                         if(!structs[0] && !creepz[0]) strikeFlag.remove();
                     }
 
-                    if (Game.time % 3 === 0) {
-                        creep.moveTo(Math.floor(Math.random() * (40 - 1) + 1), Math.floor(Math.random() * (40 - 1) + 1), { plainCost: 0, reusePath: 0 });
-                        }
-                    }
+                    if (Game.time % 3 === 0) creep.moveTo(Math.floor(Math.random() * (40 - 1) + 1), Math.floor(Math.random() * (40 - 1) + 1), { plainCost: 0, reusePath: 0 });                  
+
+                    } else creep.moveTo(new RoomPosition(creep.memory.x, creep.memory.y, creep.memory.troom), { reusePath: 50 });
                 continue;
 
 
@@ -3569,7 +3658,7 @@ const roles = function () {
 
                     if (creep.room.terminal) {
                         
-                        if (creep.transfer(creep.room.terminal, creep.memory.mType) === ERR_NOT_IN_RANGE) creep.moveTo(targets, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                            
+                        if (creep.transfer(creep.room.terminal, creep.memory.mType) === ERR_NOT_IN_RANGE) creep.moveTo(creep.room.terminal, { visualizePathStyle: { stroke: '#ffffff' }, reusePath: 10 });                            
                         continue;
                     }
 
@@ -4101,21 +4190,6 @@ const createBody = function (bodyString) {
     let j;
     let part;
 
-    // body object LUT
-    const bodyObject =
-        {
-
-            m: MOVE,
-            w: WORK,
-            c: CARRY,
-            a: ATTACK,
-            r: RANGED_ATTACK,
-            h: HEAL,
-            x: CLAIM,
-            k: CLAIM,
-            t: TOUGH
-        }
-
     // parse and expand the string into array of body bits
     const bodyArray = new Array();
 
@@ -4182,6 +4256,7 @@ const getName = function () {
     let isNameTaken;
     let nameArray;
     let tries = 0;
+
     do {
         nameArray = Math.random() > .5 ? names1 : names2;
         name = nameArray[Math.floor(Math.random() * nameArray.length)];
@@ -4221,17 +4296,22 @@ const getName = function () {
 const roomRoads = function (f) {
 
     if (f.room.memory === undefined) return;
-    const roadEnd = Game.flags['RoadEnd'];
-    const path = f.room.findPath(f.pos, roadEnd.pos, { maxOps: 1200, ignoreCreeps: true });
-    let d = 0;
-    while (d < path.length - 1) {
-        d++;
-        f.room.createConstructionSite(path[path.length - d].x, path[path.length - d].y, STRUCTURE_ROAD);
-    }
+    else {
 
-    f.room.memory.timers.gtCycle = 0;
-    roadEnd.remove();
-    f.remove();
+        const roadEnd = Game.flags['RoadEnd'];
+        const path = f.room.findPath(f.pos, roadEnd.pos, { maxOps: 2000, ignoreCreeps: true });
+        let d = 0;
+    
+        while (d < path.length) {
+            f.room.createConstructionSite(path[d].x, path[d].y, STRUCTURE_ROAD);
+            d++;
+        }
+    
+        //f.room.memory.timers.gtCycle = 0;
+        roadEnd.remove();
+        f.remove();
+
+    }
 
 };
 
@@ -4247,8 +4327,12 @@ const roomRoads = function (f) {
 
 
 
-
-
+/* 
+// Old Case Words Consts from Block Format --->  Now Global Constant Format
+const casewords = ['Yes boss', 'Good to go', 'Go on', 'InnerPeace', 'To work', 'Narmal'];
+const casewords = ['The Void', 'o//', 'Templars!', 'AIUR!', 'En Taro', '☯ ', '✝', ' 🛐', '⚛', ' 🎇', ' 🔆', '♾', '✨'];
+const casewords = ['Aiur calls', 'Expiring', 'To Aiur', '😱 ', '💀 ', 'Farewell', '👻', '⛔'];
+ */
 
 
 
@@ -4261,24 +4345,11 @@ const roomRoads = function (f) {
 */
 const cSpeak = function (code) {
 
-    if (code === 6) {    // -- Warping In / Moving / Working
-        const casewords = ['Yes boss', 'Good to go', 'Go on', 'InnerPeace', 'To work', 'Narmal'];
-        return casewords[Math.floor(Math.random() * (5 + 1))];
-    }
-
-    if (code === 7) {    // -- Upgrading Controller
-        const casewords = ['The Void', 'o//', 'Templars!', 'AIUR!', 'En Taro', '☯ ', '✝', ' 🛐', '⚛', ' 🎇', ' 🔆', '♾', '✨'];
-        return casewords[Math.floor(Math.random() * (12 + 1))];
-    }
-
-    if (code === 8) {    // -- End of life-span
-        const casewords = ['Aiur calls', 'Expiring', 'To Aiur', '😱 ', '💀 ', 'Farewell', '👻', '⛔'];
-        return casewords[Math.floor(Math.random() * (7 + 1))];
-    }
-
-    else { // --==<<{[[[ We - Are - One ]]]}>>==--
-        return 'We Are One';
-    }
+    if (code === 6) return casewords.rising[Math.floor(Math.random() * (5 + 1))];  // -- Warping In / Moving / Working
+    else if (code === 6.1) return casewords.fighting[Math.floor(Math.random() * (7 + 1))]; // -- In Combat
+    else if (code === 7) return casewords.upgrading[Math.floor(Math.random() * (12 + 1))]; // -- Upgrading Controller
+    else if (code === 8) return casewords.falling[Math.floor(Math.random() * (7 + 1))]; // -- End of Life
+    else return 'We Are One'; // --==<<{[[[ We - Are - One ]]]}>>==--
 
 };
 
